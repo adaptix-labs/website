@@ -1,4 +1,5 @@
 import { env, SELF } from "cloudflare:test";
+import { handleEnquiry } from "../src/enquiry";
 import { beforeEach, describe, expect, it } from "vitest";
 import { clearRows, countRows, fakeOutbound, ORIGIN, postEnquiry, postViaWorker, validFields } from "./helpers";
 
@@ -173,6 +174,37 @@ describe("POST /api/enquiry", () => {
     expect(res.status).toBe(303);
     expect(res.headers.get("location")).toBe("/?sent=1#contact");
     expect(await countRows()).toBe(1);
+  });
+
+  it("refuses bodies larger than 16 KB before reading them", async () => {
+    const res = await postEnquiry({ ...validFields, message: "x".repeat(20_000) });
+    expect(res.status).toBe(413);
+    expect(await countRows()).toBe(0);
+  });
+
+  it("refuses an oversized body even without a Content-Length header", async () => {
+    const big = new URLSearchParams({ ...validFields, message: "x".repeat(20_000) }).toString();
+    const stream = new ReadableStream<Uint8Array>({
+      start(c) {
+        c.enqueue(new TextEncoder().encode(big));
+        c.close();
+      },
+    });
+    const req = new Request(`${ORIGIN}/api/enquiry`, {
+      method: "POST",
+      headers: { origin: ORIGIN, "content-type": "application/x-www-form-urlencoded", accept: "application/json" },
+      body: stream,
+      // @ts-expect-error duplex is required for streaming bodies in the runtime
+      duplex: "half",
+    });
+    const res = await handleEnquiry(req, env, fakeOutbound().fetch);
+    expect(res.status).toBe(413);
+  });
+
+  it("keeps the subject on one line when the name contains a line break", async () => {
+    const outbound = fakeOutbound();
+    await postEnquiry({ ...validFields, name: "Jane\nTeacher" }, outbound);
+    expect(outbound.resendCalls[0].subject).toBe("New enquiry from Jane Teacher · School workshop");
   });
 
   it("is routed by the Worker and only accepts POST", async () => {
