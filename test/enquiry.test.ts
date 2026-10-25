@@ -84,6 +84,7 @@ describe("POST /api/enquiry", () => {
     expect(html).toContain('<meta name="color-scheme" content="light dark">');
     expect(html).toContain('<meta name="supported-color-schemes" content="light dark">');
     expect(html).toMatch(/@media \(prefers-color-scheme: dark\)/);
+    expect(html).toContain("[data-ogsc] .ink"); // Outlook's dark-mode hook
     expect(html).toContain('<img src="https://adaptix.uk/assets/adaptix-logo-email.png"');
     expect(html).not.toContain("logo-plate");
   });

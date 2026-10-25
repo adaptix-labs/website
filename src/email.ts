@@ -77,6 +77,14 @@ export function renderEnquiryEmail(e: EnquiryInput, adminUrl: string): EnquiryEm
     .footer { background: #0f1b2a !important; border-color: #2a3b52 !important; }
     a { color: #9cc7ff !important; }
   }
+  /* Outlook (iOS, Android, outlook.com) applies dark mode without the media query; it exposes these attributes instead. */
+  [data-ogsb] .bg, [data-ogsb] .footer { background: #0f1b2a !important; }
+  [data-ogsb] .card { background: #16263a !important; }
+  [data-ogsb] .msgbox { background: #1d2f45 !important; }
+  [data-ogsc] .ink { color: #eef3f8 !important; }
+  [data-ogsc] .muted { color: #b3c2d1 !important; }
+  [data-ogsc] a { color: #9cc7ff !important; }
+  [data-ogsc] .card, [data-ogsc] .lines, [data-ogsc] .lines th, [data-ogsc] .lines td, [data-ogsc] .footer { border-color: #2a3b52 !important; }
 </style>
 </head>
 <body class="bg" style="margin:0;padding:0;background:#f8f7f2;-webkit-text-size-adjust:100%">
