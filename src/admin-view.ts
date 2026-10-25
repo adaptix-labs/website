@@ -152,7 +152,9 @@ h1{margin:0;font:800 32px/1.1 Sora,Inter,sans-serif;color:var(--navy);letter-spa
 .head{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:flex-start}
 h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-spacing:-.01em;overflow-wrap:anywhere}
 .meta{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--muted)}
-.meta .mail.bad[open]{flex:1 0 100%}
+.meta .mail.bad{position:relative}
+.mail.bad p{position:absolute;top:calc(100% + 8px);left:0;z-index:5;width:max-content;max-width:min(320px,calc(100vw - 64px));margin:0;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px -14px rgba(16,43,72,.45)}
+.mail.bad p::before{content:"";position:absolute;top:-6px;left:18px;width:10px;height:10px;background:#fff;border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
 .badge{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;font-size:13px;line-height:1;font-weight:700;background:#eaf4f7;color:var(--blue)}
 .badge.contacted{background:#fff4d6;color:#7a5a00}.badge.closed{background:#e8f0e8;color:#2f6b3a}
 .when{margin:0;font-size:14px;color:var(--muted)}
@@ -165,7 +167,7 @@ h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-sp
 .mail.ok,.mail.bad summary,.mail:not(.ok):not(.bad){display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;line-height:1;background:#eef2f5;color:var(--muted)}
 .mail.ok{background:#e8f0e8;color:#2f6b3a}
 .mail.bad summary{background:#fdecec;color:#b42318;cursor:pointer}
-.mail.bad p{margin:10px 0 0;font-size:14px;font-weight:400;color:var(--ink)}
+.mail.bad p{font-size:14px;font-weight:400;color:var(--ink);line-height:1.45}
 .status{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0}
 .status label{font-size:14px;font-weight:600;color:var(--muted)}
 select{height:44px;padding:0 40px 0 18px;border-radius:999px;border:2px solid var(--navy);font-weight:600;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23102b48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;appearance:none;-webkit-appearance:none;font-family:inherit;font-size:15px;color:var(--navy);cursor:pointer}
