@@ -5,6 +5,8 @@ import { validateEnquiry, type EnquiryInput } from "./validate";
 export type Outbound = typeof fetch;
 
 const TURNSTILE_VERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+/** A legitimate submission is a few kilobytes; anything beyond this is refused before parsing. */
+const MAX_BODY_BYTES = 16 * 1024;
 const RESEND_EMAILS = "https://api.resend.com/emails";
 
 export async function handleEnquiry(request: Request, env: Env, outbound: Outbound = fetch): Promise<Response> {
@@ -19,6 +21,7 @@ export async function handleEnquiry(request: Request, env: Env, outbound: Outbou
 
   const reply = responder(request);
   const fields = await readFields(request);
+  if (fields === null) return reply.tooLarge();
 
   // Honeypot: bots fill the hidden "website" field. Pretend it worked and store nothing.
   if ((fields.website ?? "") !== "") return reply.ok();
@@ -49,17 +52,58 @@ export async function handleEnquiry(request: Request, env: Env, outbound: Outbou
   return reply.ok();
 }
 
-async function readFields(request: Request): Promise<Record<string, string>> {
+/** Reads the body with a hard size cap. Returns null when the body is too large. */
+async function readFields(request: Request): Promise<Record<string, string> | null> {
+  const declared = Number(request.headers.get("content-length"));
+  if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) return null;
+
+  const bytes = await readLimited(request.body, MAX_BODY_BYTES);
+  if (bytes === null) return null;
+
   const type = request.headers.get("content-type") ?? "";
   const fields: Record<string, string> = {};
   if (type.includes("application/json")) {
-    const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
-    for (const [k, v] of Object.entries(body)) if (typeof v === "string") fields[k] = v;
+    try {
+      const body = JSON.parse(new TextDecoder().decode(bytes)) as Record<string, unknown>;
+      for (const [k, v] of Object.entries(body)) if (typeof v === "string") fields[k] = v;
+    } catch {
+      /* unreadable JSON: treat as empty submission */
+    }
     return fields;
   }
-  const form = await request.formData().catch(() => new FormData());
-  for (const [k, v] of form.entries()) if (typeof v === "string") fields[k] = v;
+  if (type.includes("multipart/form-data")) {
+    const form = await new Request(request.url, { method: "POST", headers: request.headers, body: bytes })
+      .formData()
+      .catch(() => new FormData());
+    for (const [k, v] of form.entries()) if (typeof v === "string") fields[k] = v;
+    return fields;
+  }
+  for (const [k, v] of new URLSearchParams(new TextDecoder().decode(bytes)).entries()) fields[k] = v;
   return fields;
+}
+
+async function readLimited(body: ReadableStream<Uint8Array> | null, max: number): Promise<Uint8Array | null> {
+  if (!body) return new Uint8Array(0);
+  const reader = body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    out.set(c, offset);
+    offset += c.byteLength;
+  }
+  return out;
 }
 
 async function verifyTurnstile(token: string, ip: string, env: Env, outbound: Outbound): Promise<boolean> {
@@ -139,6 +183,7 @@ function responder(request: Request) {
     forbidden: (message: string) => (wantsHtml ? back("error=check") : json({ ok: false, error: message }, 403)),
     tooMany: () =>
       wantsHtml ? back("error=busy") : json({ ok: false, error: "Too many enquiries from this connection. Please try again later." }, 429),
+    tooLarge: () => (wantsHtml ? back("error=invalid") : json({ ok: false, error: "That submission is too large." }, 413)),
   };
 }
 
