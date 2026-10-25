@@ -24,7 +24,7 @@ env:
   # Variables. Ids are not secret; the inbox and admin list are.
   TF_VAR_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
   TF_VAR_zone_id: "31eec8ae3fb94be260d273824559bfe2"
-  TF_VAR_access_team_name: "adaptix"
+  TF_VAR_access_team_name: "keyvault"
   TF_VAR_enquiry_destination_email: ${{ secrets.TF_VAR_ENQUIRY_DESTINATION_EMAIL }}
   TF_VAR_access_allowed_emails: ${{ secrets.TF_VAR_ACCESS_ALLOWED_EMAILS }}
   # Only needed while infra/imports.tf exists (first apply); delete the secret afterwards.

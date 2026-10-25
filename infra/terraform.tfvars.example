@@ -1,7 +1,7 @@
 # Copy to terraform.tfvars (git-ignored) and fill in.
 account_id                = "00000000000000000000000000000000"
 zone_id                   = "00000000000000000000000000000000"
-access_team_name          = "adaptix"
+access_team_name          = "keyvault"
 enquiry_destination_email = "someone@example.com"
 access_allowed_emails     = ["someone@example.com"]
 
