@@ -11,7 +11,7 @@ export interface Env {
   ACCESS_TEAM_DOMAIN: string;
   /** Audience tag of the Access application protecting /admin */
   ACCESS_AUD: string;
-  /** Comma-separated emails allowed to change or delete enquiries */
+  /** Secret: comma-separated emails allowed to change or delete enquiries */
   ADMIN_EMAILS: string;
   /** Enquiries older than this many days are deleted by the scheduled job */
   RETENTION_DAYS: string;
