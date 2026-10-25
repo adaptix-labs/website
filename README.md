@@ -43,7 +43,7 @@ Repository secrets the workflow needs:
 
 | Secret | Value |
 | --- | --- |
-| `TF_CLOUDFLARE_API_TOKEN` | Custom token: Account → D1, Turnstile, Email Routing Addresses, Access: Apps and Policies (Edit), Access: Organizations, Identity Providers, and Groups (Edit), Account Settings (Read); Zone (adaptix.uk) → Zone Read, Zone Settings Edit, DNS Edit, Email Routing Rules Edit |
+| `TF_CLOUDFLARE_API_TOKEN` | Custom token: Account → D1, Turnstile, Email Routing Addresses, Access: Apps and Policies (Edit), Access: Organizations, Identity Providers, and Groups (Edit), Account Settings (Read); Zone (adaptix.uk) → Zone Read, Zone Settings Edit, Zone WAF Edit, DNS Edit, Email Routing Rules Edit |
 | `CLOUDFLARE_ACCOUNT_ID` | Shared with the deploy workflow |
 | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | R2 account API token with Object Read & Write on the state bucket |
 | `TF_VAR_ENQUIRY_DESTINATION_EMAIL` | The private inbox hello@ forwards to |
