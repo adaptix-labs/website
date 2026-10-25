@@ -15,12 +15,13 @@ export const validFields = {
 
 export function enquiryRequest(
   fields: Record<string, string>,
-  init: { headers?: Record<string, string>; ip?: string } = {},
+  init: { headers?: Record<string, string>; ip?: string; origin?: string } = {},
 ): Request {
-  return new Request(`${ORIGIN}/api/enquiry`, {
+  const origin = init.origin ?? ORIGIN;
+  return new Request(`${origin}/api/enquiry`, {
     method: "POST",
     headers: {
-      origin: ORIGIN,
+      origin,
       "content-type": "application/x-www-form-urlencoded",
       accept: "application/json",
       "cf-connecting-ip": init.ip ?? "203.0.113.10",

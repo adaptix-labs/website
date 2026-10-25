@@ -10,11 +10,13 @@ export async function handleEnquiry(request: Request, env: Env, outbound: Outbou
   if (request.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405, headers: { allow: "POST" } });
   }
-  if (request.headers.get("origin") !== env.ALLOWED_ORIGIN) {
+  // Only the page served by this Worker may post to it, on whichever host it is served from.
+  const origin = request.headers.get("origin");
+  if (!origin || origin !== new URL(request.url).origin) {
     return json({ ok: false, error: "Forbidden" }, 403);
   }
 
-  const reply = responder(request, env);
+  const reply = responder(request);
   const fields = await readFields(request);
 
   // Honeypot: bots fill the hidden "website" field. Pretend it worked and store nothing.
@@ -135,10 +137,10 @@ async function sendEmail(e: EnquiryInput, env: Env, outbound: Outbound): Promise
 }
 
 /** Browsers submitting the form without JavaScript get a redirect; the page script gets JSON. */
-function responder(request: Request, env: Env) {
+function responder(request: Request) {
   const accept = request.headers.get("accept") ?? "";
   const wantsHtml = accept.includes("text/html") && !accept.includes("application/json");
-  const back = (query: string) => Response.redirect(`${env.ALLOWED_ORIGIN}/?${query}#contact`, 303);
+  const back = (query: string) => new Response(null, { status: 303, headers: { location: `/?${query}#contact` } });
   return {
     ok: () => (wantsHtml ? back("sent=1") : json({ ok: true })),
     invalid: (errors: Record<string, string>) => (wantsHtml ? back("error=invalid") : json({ ok: false, errors }, 400)),

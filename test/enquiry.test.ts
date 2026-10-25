@@ -110,12 +110,24 @@ describe("POST /api/enquiry", () => {
     expect(await countRows()).toBe(0);
   });
 
-  it("redirects plain form posts back to the page", async () => {
+  it("accepts posts from whichever host the Worker is served on", async () => {
+    const res = await postEnquiry(validFields, fakeOutbound(), { origin: "https://www.adaptix.uk" });
+    expect(res.status).toBe(200);
+    expect(await countRows()).toBe(1);
+  });
+
+  it("rejects posts with no Origin header", async () => {
+    const res = await postEnquiry(validFields, fakeOutbound(), { headers: { origin: "" } });
+    expect(res.status).toBe(403);
+    expect(await countRows()).toBe(0);
+  });
+
+  it("redirects plain form posts back to the page with a relative location", async () => {
     const res = await postEnquiry(validFields, fakeOutbound(), {
       headers: { accept: "text/html,application/xhtml+xml" },
     });
     expect(res.status).toBe(303);
-    expect(res.headers.get("location")).toBe(`${ORIGIN}/?sent=1#contact`);
+    expect(res.headers.get("location")).toBe("/?sent=1#contact");
     expect(await countRows()).toBe(1);
   });
 

@@ -26,7 +26,6 @@
     }
   ],
   "vars": {
-    "ALLOWED_ORIGIN": "https://adaptix.uk",
     "ENQUIRY_TO": "enquiries@adaptix.uk",
     "ENQUIRY_FROM": "Adaptix website <no-reply@adaptix.uk>"
   }
