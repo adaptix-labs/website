@@ -64,6 +64,18 @@ describe("POST /api/enquiry", () => {
     expect(html).not.toContain(">Open admin<");
   });
 
+  it("builds the HTML email to be readable by screen readers and on phones", async () => {
+    const outbound = fakeOutbound();
+    await postEnquiry(validFields, outbound);
+    const html = String(outbound.resendCalls[0].html);
+    expect(html).toContain('<html lang="en-GB"');
+    expect(html).toMatch(/<h1[\s>]/);
+    expect(html).toContain('<th scope="row"');
+    expect(html).toContain("<caption");
+    expect(html).toMatch(/<table[^>]*role="presentation"/);
+    expect(html).toMatch(/@media[^{]*max-width/);
+  });
+
   it("escapes visitor text in the HTML email", async () => {
     const outbound = fakeOutbound();
     await postEnquiry({ ...validFields, name: "Eve <script>alert(1)</script>", message: "a & b <b>bold</b>" }, outbound);
