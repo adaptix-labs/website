@@ -20,8 +20,7 @@
     {
       "binding": "DB",
       "database_name": "adaptix-enquiries",
-      // Replace with the id printed by `wrangler d1 create adaptix-enquiries --location weur`
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "9e77f81a-63b0-47a8-a8b9-48a1032e4526",
       "migrations_dir": "migrations"
     }
   ],
