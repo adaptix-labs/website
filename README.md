@@ -25,10 +25,11 @@ The page ships with Cloudflare's always-passing Turnstile **test** site key, so 
 1. **Cloudflare zone.** Add `adaptix.uk` to the Cloudflare account and point the registrar's nameservers at Cloudflare.
 2. **Database.** `npx wrangler d1 create adaptix-enquiries --location weur` and paste the printed id into `database_id` in `wrangler.jsonc`. Western Europe keeps the data in the EU.
 3. **Turnstile.** Create a widget for `adaptix.uk` in the Cloudflare dashboard. Replace the test `data-sitekey` in `public/index.html` with the real site key and store the secret: `npx wrangler secret put TURNSTILE_SECRET`.
-4. **Resend.** Verify `adaptix.uk` in Resend (two DNS records) and store the key: `npx wrangler secret put RESEND_API_KEY`. Store the inbox that receives enquiries as a secret too, so it never appears in the repository: `npx wrangler secret put ENQUIRY_TO`. `ENQUIRY_FROM` in `wrangler.jsonc` is the sending address on the domain.
-5. **IP hash salt.** `openssl rand -hex 32 | npx wrangler secret put IP_HASH_SALT`.
-6. **Access for /admin.** In Zero Trust, add a self-hosted application for `adaptix.uk/admin` with a policy listing who may sign in. Copy the application's Audience (AUD) tag and the team domain into `ACCESS_AUD` and `ACCESS_TEAM_DOMAIN` in `wrangler.jsonc`, and put the administrators' emails in `ADMIN_EMAILS`. Until these are set, `/admin` returns 503.
-7. **GitHub secrets.** Add `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1, Workers Routes and Zone DNS edit) and `CLOUDFLARE_ACCOUNT_ID` to the repository. Pushes to `main` then run migrations and deploy.
+4. **Email Routing.** Enable Email Routing on the zone and create `hello@adaptix.uk` forwarding to the private inbox; verify the destination when Cloudflare emails it. This is the public contact address on the page.
+5. **Resend.** Verify `adaptix.uk` in Resend (two DNS records) and store the key: `npx wrangler secret put RESEND_API_KEY`. Store the address that receives enquiry notifications as a secret: `npx wrangler secret put ENQUIRY_TO` (use `hello@adaptix.uk`, so the private inbox appears nowhere). `ENQUIRY_FROM` in `wrangler.jsonc` is the sending address on the domain.
+6. **IP hash salt.** `openssl rand -hex 32 | npx wrangler secret put IP_HASH_SALT`.
+7. **Access for /admin.** In Zero Trust, add a self-hosted application for `adaptix.uk/admin` with a policy listing who may sign in. Copy the application's Audience (AUD) tag and the team domain into `ACCESS_AUD` and `ACCESS_TEAM_DOMAIN` in `wrangler.jsonc`, and put the administrators' emails in `ADMIN_EMAILS`. Until these are set, `/admin` returns 503.
+8. **GitHub secrets.** Add `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1, Workers Routes and Zone DNS edit) and `CLOUDFLARE_ACCOUNT_ID` to the repository. Pushes to `main` then run migrations and deploy.
 
 `workers_dev` is disabled, so the Worker is reachable only on the custom domains. The admin page verifies the Access token itself, so a request that somehow bypasses Access is still refused.
 
