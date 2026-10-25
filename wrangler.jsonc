@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "adaptix-website",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "none"
+  },
+  "routes": [
+    { "pattern": "adaptix.uk", "custom_domain": true },
+    { "pattern": "www.adaptix.uk", "custom_domain": true }
+  ],
+  "vars": {
+    "ALLOWED_ORIGIN": "https://adaptix.uk"
+  }
+}
