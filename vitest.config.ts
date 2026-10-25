@@ -20,6 +20,7 @@ export default defineConfig(async () => {
             ACCESS_TEAM_DOMAIN: "adaptix.cloudflareaccess.com",
             ACCESS_AUD: "test-audience-tag",
             ADMIN_EMAILS: "boss@adaptix.uk, second.admin@adaptix.uk",
+            RETENTION_DAYS: "365",
           },
         },
       }),

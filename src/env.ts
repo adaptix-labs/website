@@ -12,4 +12,6 @@ export interface Env {
   ACCESS_AUD: string;
   /** Comma-separated emails allowed to change or delete enquiries */
   ADMIN_EMAILS: string;
+  /** Enquiries older than this many days are deleted by the scheduled job */
+  RETENTION_DAYS: string;
 }

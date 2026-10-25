@@ -25,9 +25,19 @@
       "migrations_dir": "migrations"
     }
   ],
+  "triggers": {
+    // Nightly data-retention job (03:00 UTC)
+    "crons": ["0 3 * * *"]
+  },
   "vars": {
     "ENQUIRY_TO": "enquiries@adaptix.uk",
-    "ENQUIRY_FROM": "Adaptix website <no-reply@adaptix.uk>"
+    "ENQUIRY_FROM": "Adaptix website <no-reply@adaptix.uk>",
+    "RETENTION_DAYS": "365",
+    // Cloudflare Access application protecting /admin. Leave empty until it exists: /admin then fails closed.
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    // Comma-separated emails allowed to change or delete enquiries; everyone else Access admits is read-only.
+    "ADMIN_EMAILS": ""
   }
   // Secrets, set with `wrangler secret put <NAME>` (or .dev.vars locally):
   //   TURNSTILE_SECRET, RESEND_API_KEY, IP_HASH_SALT
