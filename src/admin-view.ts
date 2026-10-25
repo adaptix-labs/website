@@ -31,7 +31,7 @@ export function renderAdminPage(m: AdminPageModel): string {
   const body = `
 <a class="skip" href="#enquiries">Skip to enquiries</a>
 <header class="top">
-  <a class="brand" href="/admin"><img src="/assets/adaptix-logo.png" alt="Adaptix" width="134" height="40"></a>
+  <a class="brand" href="/admin"><img src="/assets/adaptix-logo.png" alt="Adaptix" width="154" height="52"></a>
   <div class="account">
     <p class="who"><span class="vh">Signed in as </span><strong>${esc(m.identity.email)}</strong><span class="role">${m.identity.isAdmin ? "administrator" : "viewer"}</span></p>
     <a class="btn small" href="/cdn-cgi/access/logout">Sign out</a>
@@ -127,7 +127,7 @@ a{color:var(--blue)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-bottom:1px solid var(--line)}
-.brand img{display:block;height:40px;width:auto}
+.brand{display:inline-block;line-height:0}.brand img{display:block;height:52px;width:auto}
 .account{display:flex;align-items:center;gap:14px;margin-left:auto;min-width:0}
 .who{display:flex;align-items:center;gap:10px;margin:0;min-width:0;font-size:14px;color:var(--ink)}
 .who strong{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -175,7 +175,7 @@ summary{list-style:none}summary::-webkit-details-marker{display:none}
 .chev{flex:none;transition:transform .15s}
 .mail.bad[open] .chev{transform:rotate(180deg)}
 .empty{padding:40px 24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:20px}
-@media(max-width:600px){.top{padding:12px 16px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{flex-wrap:nowrap;gap:8px;align-items:flex-start}.foot .status{flex:1 1 auto;flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}.status .btn{min-width:0;padding:0 16px}.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.danger summary{width:44px;min-width:44px;padding:0;gap:0}.danger summary .label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.foot:has(.danger[open]){flex-wrap:wrap}.danger[open]{flex:1 0 100%}.danger[open] summary{width:auto;min-width:0;padding:0 16px;gap:8px}.danger[open] summary .label{position:static;width:auto;height:auto;clip:auto;clip-path:none}}
+@media(max-width:600px){.top{padding:12px 16px}.brand img{height:44px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{flex-wrap:nowrap;gap:8px;align-items:flex-start}.foot .status{flex:1 1 auto;flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}.status .btn{min-width:0;padding:0 16px}.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.danger summary{width:44px;min-width:44px;padding:0;gap:0}.danger summary .label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.foot:has(.danger[open]){flex-wrap:wrap}.danger[open]{flex:1 0 100%}.danger[open] summary{width:auto;min-width:0;padding:0 16px;gap:8px}.danger[open] summary .label{position:static;width:auto;height:auto;clip:auto;clip-path:none}}
 </style>
 </head>
 <body>${body}
