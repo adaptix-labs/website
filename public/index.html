@@ -77,6 +77,7 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 .nav .btn{margin-top:10px}
 }
 @media(max-width:400px){#about .lift{flex-direction:column;align-items:flex-start!important;gap:6px!important}}
+@media(max-width:480px){#contact{padding-left:16px!important;padding-right:16px!important}#enquiry{padding:24px 20px!important}}
 
 .skip{position:absolute;top:8px;left:-9999px;z-index:30;background:#102b48;color:#fff;padding:10px 16px;border-radius:8px;font:600 15px Inter,sans-serif}.skip:focus{left:16px}
 main:focus{outline:none}
@@ -180,7 +181,7 @@ main:focus{outline:none}
 </div>
 <label class="fld" style="margin-top:18px">I'm interested in *<select name="interest" required><option>School workshop</option><option>Curriculum resources</option><option>Business partnership</option><option>Research collaboration</option><option>Other</option></select></label>
 <label class="fld" style="margin-top:18px">Tell us about your enquiry<textarea name="message"></textarea></label>
-<div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin-top:22px"></div>
+<div id="turnstile" data-sitekey="1x00000000000000000000AA" style="margin-top:22px;min-height:65px"></div>
 <button class="btn" type="submit" style="margin-top:14px;width:100%">Send enquiry</button>
 <p style="margin:14px 0 0;font-size:13px;color:#43596a">Your details are used only to reply to your enquiry.</p>
 <p id="ok" class="msg" hidden role="status" style="background:#eaf4f7;border-left:5px solid #f9c742;color:#102b48"><b>Thank you!</b> We have received your enquiry and will reply soon.</p><p id="err" class="msg" hidden role="alert" style="background:#fdecec;border-left:5px solid #e23b3b;color:#5a1414">Your enquiry did not send. Please check your connection and try again, or email <a href="mailto:hello@adaptix.uk" style="color:inherit;font-weight:600;text-decoration:underline">hello@adaptix.uk</a>.</p><input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"></form></div></section>
@@ -193,6 +194,6 @@ main:focus{outline:none}
 </div></footer>
 </div>
 <script src="site.js" defer></script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=adaptixTurnstile" async defer></script>
 </body>
 </html>

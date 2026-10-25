@@ -1,3 +1,7 @@
+var turnstileWidget=null;
+window.adaptixTurnstile=function(){var el=document.getElementById('turnstile');if(!el||!window.turnstile)return;
+var size=el.clientWidth>=300?'flexible':'compact';
+turnstileWidget=window.turnstile.render(el,{sitekey:el.getAttribute('data-sitekey'),theme:'light',size:size})};
 (function(){var f=document.getElementById('enquiry');if(!f)return;
 var ok=document.getElementById('ok'),err=document.getElementById('err'),btn=f.querySelector('button[type=submit]');
 var messages={busy:'Too many enquiries from this connection. Please try again later.',check:'The security check failed. Please try again.',invalid:'Please check the highlighted fields and try again.',network:'Your enquiry did not send. Check your connection and try again, or email <a href="mailto:hello@adaptix.uk" style="color:inherit;font-weight:600;text-decoration:underline">hello@adaptix.uk</a>.'};
@@ -10,7 +14,7 @@ fetch(f.action,{method:'POST',headers:{accept:'application/json'},body:new URLSe
 .then(function(body){if(body.ok){f.reset();show(ok);return}
 var m=body.error;if(!m&&body.errors){var k=Object.keys(body.errors)[0];m=body.errors[k]}if(m)show(err,m);else show(err,null,messages.network)})
 .catch(function(){show(err,null,messages.network)})
-.then(function(){btn.disabled=false;btn.textContent=label;if(window.turnstile)window.turnstile.reset()})});})();
+.then(function(){btn.disabled=false;btn.textContent=label;if(window.turnstile&&turnstileWidget!==null)window.turnstile.reset(turnstileWidget)})});})();
 
 (function(){var b=document.querySelector('.menu'),n=document.getElementById('nav');if(!b||!n)return;
 function set(o){n.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'true':'false')}
