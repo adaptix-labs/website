@@ -1,7 +1,16 @@
-(function(){var f=document.getElementById('enquiry');if(!f)return;var ok=document.getElementById('ok'),err=document.getElementById('err'),btn=f.querySelector('button[type=submit]');
-f.addEventListener('submit',function(e){e.preventDefault();if(f.elements.website&&f.elements.website.value)return;ok.hidden=true;err.hidden=true;btn.disabled=true;var label=btn.textContent;btn.textContent='Sending\u2026';
-var d=new FormData(f);d.delete('website');
-fetch(f.action,{method:'POST',mode:'no-cors',body:new URLSearchParams(d)}).then(function(){f.reset();ok.hidden=false;ok.scrollIntoView({block:'nearest',behavior:'smooth'})}).catch(function(){err.hidden=false}).then(function(){btn.disabled=false;btn.textContent=label})});})();
+(function(){var f=document.getElementById('enquiry');if(!f)return;
+var ok=document.getElementById('ok'),err=document.getElementById('err'),btn=f.querySelector('button[type=submit]');
+var messages={busy:'Too many enquiries from this connection. Please try again later.',check:'The security check failed. Please try again.',invalid:'Please check the highlighted fields and try again.',network:'Your enquiry did not send. Check your connection and try again.'};
+function show(el,text){ok.hidden=true;err.hidden=true;if(text)el.textContent=text;el.hidden=false;el.scrollIntoView({block:'nearest',behavior:'smooth'})}
+var q=new URLSearchParams(location.search);
+if(q.get('sent'))show(ok);else if(q.get('error'))show(err,messages[q.get('error')]||messages.invalid);
+f.addEventListener('submit',function(e){e.preventDefault();btn.disabled=true;var label=btn.textContent;btn.textContent='Sending\u2026';
+fetch(f.action,{method:'POST',headers:{accept:'application/json'},body:new URLSearchParams(new FormData(f))})
+.then(function(r){return r.json().catch(function(){return {ok:false}})})
+.then(function(body){if(body.ok){f.reset();show(ok);return}
+var m=body.error;if(!m&&body.errors){var k=Object.keys(body.errors)[0];m=body.errors[k]}show(err,m||messages.network)})
+.catch(function(){show(err,messages.network)})
+.then(function(){btn.disabled=false;btn.textContent=label;if(window.turnstile)window.turnstile.reset()})});})();
 
 (function(){var b=document.querySelector('.menu'),n=document.getElementById('nav');if(!b||!n)return;
 function set(o){n.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'true':'false')}

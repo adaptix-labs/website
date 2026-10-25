@@ -31,4 +31,11 @@ describe("static site", () => {
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).not.toContain("script-src 'self' 'unsafe-inline'");
   });
+
+  it("allows the Turnstile widget in the Content Security Policy", async () => {
+    const res = await SELF.fetch("https://adaptix.uk/");
+    const csp = res.headers.get("content-security-policy") ?? "";
+    expect(csp).toMatch(/script-src [^;]*https:\/\/challenges\.cloudflare\.com/);
+    expect(csp).toMatch(/frame-src [^;]*https:\/\/challenges\.cloudflare\.com/);
+  });
 });

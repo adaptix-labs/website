@@ -1,10 +1,11 @@
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self'",
+  "script-src 'self' https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src https://fonts.gstatic.com",
   "img-src 'self' data:",
   "connect-src 'self'",
+  "frame-src https://challenges.cloudflare.com",
   "form-action 'self'",
   "base-uri 'none'",
   "object-src 'none'",

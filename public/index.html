@@ -171,16 +171,17 @@ main:focus{outline:none}
 <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:64px">
 <div><p class="eb" style="color:#f9c742">Start a conversation</p><h2 class="h" style="font-size:clamp(32px,7vw,48px);color:#fff">Let's make learning move.</h2>
 <p style="font-size:19px;color:#d7e6f3;margin:20px 0 0">Interested in a school workshop, learning resources or a partnership? Tell us a little about what you have in mind. We would be pleased to hear from schools, educators and collaborators.</p></div>
-<form id="enquiry" action="https://docs.google.com/forms/d/e/1FAIpQLSd3tW8njp6FMSxBN26UTwdS04rvJquBcqUC4UPLwXuNSXen4A/formResponse" method="POST" target="_blank" style="background:#fff;border-radius:24px;padding:36px">
+<form id="enquiry" action="/api/enquiry" method="POST" style="background:#fff;border-radius:24px;padding:36px">
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:18px">
-<label class="fld">Your name *<input type="text" name="entry.2005589898" autocomplete="name" required=""></label>
-<label class="fld">Work email *<input type="email" name="entry.520765193" autocomplete="email" required=""></label>
-<label class="fld">Phone<input type="tel" name="entry.738909185" autocomplete="tel"></label>
-<label class="fld">School or organisation<input type="text" name="entry.37241398"></label>
+<label class="fld">Your name *<input type="text" name="name" autocomplete="name" required=""></label>
+<label class="fld">Work email *<input type="email" name="email" autocomplete="email" required=""></label>
+<label class="fld">Phone<input type="tel" name="phone" autocomplete="tel"></label>
+<label class="fld">School or organisation<input type="text" name="organisation"></label>
 </div>
-<label class="fld" style="margin-top:18px">I'm interested in *<select name="entry.1041544731" required><option>School workshop</option><option>Curriculum resources</option><option>Business partnership</option><option>Research collaboration</option><option value="__other_option__">Other</option></select></label>
-<label class="fld" style="margin-top:18px">Tell us about your enquiry<textarea name="entry.1852642943"></textarea></label>
-<input type="hidden" name="entry.1041544731.other_option_response" value="Other"><button class="btn" type="submit" style="margin-top:22px;width:100%">Send enquiry</button>
+<label class="fld" style="margin-top:18px">I'm interested in *<select name="interest" required><option>School workshop</option><option>Curriculum resources</option><option>Business partnership</option><option>Research collaboration</option><option>Other</option></select></label>
+<label class="fld" style="margin-top:18px">Tell us about your enquiry<textarea name="message"></textarea></label>
+<div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin-top:22px"></div>
+<button class="btn" type="submit" style="margin-top:14px;width:100%">Send enquiry</button>
 <p style="margin:14px 0 0;font-size:13px;color:#43596a">Your details are used only to reply to your enquiry.</p>
 <p id="ok" class="msg" hidden role="status" style="background:#eaf4f7;border-left:5px solid #f9c742;color:#102b48"><b>Thank you!</b> We have received your enquiry and will reply soon.</p><p id="err" class="msg" hidden role="alert" style="background:#fdecec;border-left:5px solid #e23b3b;color:#5a1414">Your enquiry did not send. Check your connection and try again, or email us directly.</p><input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"></form></div></section>
 </main>
@@ -192,5 +193,6 @@ main:focus{outline:none}
 </div></footer>
 </div>
 <script src="site.js" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </body>
 </html>
