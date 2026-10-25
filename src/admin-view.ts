@@ -68,7 +68,7 @@ function card(r: EnquiryRow, who: Identity): string {
     r.email_status === "sent"
       ? `<p class="mail ok">Email sent</p>`
       : r.email_status === "failed"
-        ? `<details class="mail bad"><summary>Email not sent</summary><p>${esc(r.email_error ?? "No reason was recorded.")} The enquiry is stored here regardless.</p></details>`
+        ? `<details class="mail bad"><summary>Email not sent <span class="chev" aria-hidden="true"></span></summary><p>${esc(r.email_error ?? "No reason was recorded.")} The enquiry is stored here regardless.</p></details>`
         : `<p class="mail">Email pending</p>`;
   const controls = who.isAdmin
     ? `
@@ -78,7 +78,7 @@ function card(r: EnquiryRow, who: Identity): string {
         <button type="submit" class="btn">Save</button>
       </form>
       <details class="danger">
-        <summary>Delete</summary>
+        <summary class="btn del"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>Delete</summary>
         <form method="post" action="/admin/enquiries/${id}/delete">
           <p>Permanently delete this enquiry from ${esc(r.name)}?</p>
           <button type="submit" class="btn del">Yes, delete it</button>
@@ -135,15 +135,15 @@ a{color:var(--blue)}
 .who{display:flex;align-items:center;gap:10px;margin:0;min-width:0;font-size:14px;color:var(--ink)}
 .who strong{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .role{flex:none;padding:3px 10px;border-radius:999px;background:#eaf4f7;color:var(--blue);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.btn.small{min-height:40px;padding:0 16px;font-size:14px;flex:none}
+.btn.small{height:40px;min-width:0;padding:0 16px;font-size:14px;flex:none}
 main{max-width:920px;margin:0 auto;padding:28px 20px 64px}
 .title{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;justify-content:space-between}
 .eb{margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
 h1{margin:0;font:800 32px/1.1 Sora,Inter,sans-serif;color:var(--navy);letter-spacing:-.02em}
 .sub{margin:6px 0 0;color:var(--muted)}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:999px;border:2px solid var(--navy);background:#fff;color:var(--navy);font:600 15px Inter,sans-serif;text-decoration:none;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;height:44px;min-width:104px;padding:0 20px;margin:0;border-radius:999px;border:2px solid var(--navy);background:#fff;color:var(--navy);font:600 15px/1 Inter,sans-serif;line-height:1;text-decoration:none;cursor:pointer;vertical-align:middle}
 .btn:hover{background:#eaf4f7}
-.btn.primary{background:var(--yellow);border-color:var(--yellow)}.btn.primary:hover{background:#ffd966}
+.btn.primary{background:var(--yellow);border-color:var(--yellow);min-width:0}.btn.primary:hover{background:#ffd966}
 .btn.del{border-color:#b42318;color:#b42318}.btn.del:hover{background:#fdecec}
 .filters{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
 .chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #cfe0ec;background:#fff;color:var(--navy);font-weight:600;text-decoration:none}
@@ -166,8 +166,11 @@ h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-sp
 .status{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0}
 .status label{font-size:14px;font-weight:600;color:var(--muted)}
 select{min-height:44px;padding:0 36px 0 12px;border-radius:10px;border:1.5px solid #9fb2c1;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23102b48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center;appearance:none;-webkit-appearance:none;font:inherit;color:var(--navy)}
-.danger summary{cursor:pointer;color:var(--muted);font-size:14px;font-weight:600;min-height:44px;display:inline-flex;align-items:center}
-.danger form{margin:8px 0 0;padding:14px 16px;background:#fdecec;border-radius:12px}.danger p{margin:0 0 10px}
+summary{list-style:none}summary::-webkit-details-marker{display:none}
+.status .btn,.danger summary{min-width:116px}.danger summary{gap:8px;cursor:pointer}.danger summary svg{flex:none}.danger[open] summary{background:#fdecec}
+.danger form{margin:10px 0 0;padding:14px 16px;background:#fdecec;border-radius:12px}.danger p{margin:0 0 10px}
+.chev{display:inline-block;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:6px}
+.mail.bad[open] .chev{transform:rotate(-135deg) translateY(-2px)}
 .empty{padding:40px 24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:20px}
 @media(max-width:600px){.top{padding:12px 16px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{flex-direction:column;align-items:stretch}.status{justify-content:space-between}.status select{flex:1}}
 </style>
