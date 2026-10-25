@@ -26,9 +26,9 @@ The page ships with Cloudflare's always-passing Turnstile **test** site key, so 
 2. **Database, Turnstile widget, Email Routing and Access** are created by the OpenTofu configuration in `infra/` (see "Infrastructure as code" below). Paste the database id into `database_id` in `wrangler.jsonc` and the Turnstile site key into `public/index.html`.
 3. **Turnstile secret.** Read the widget's secret key in the dashboard and store it: `npx wrangler secret put TURNSTILE_SECRET`.
 4. **Email Routing** is applied by OpenTofu; the private inbox must click the verification link Cloudflare emails it before forwarding starts. hello@adaptix.uk is the public contact address on the page.
-5. **Resend.** The DNS records Resend requires are in `infra/main.tf`; click Verify in Resend once they are applied. Store the key: `npx wrangler secret put RESEND_API_KEY`. Store the address that receives enquiry notifications as a secret: `npx wrangler secret put ENQUIRY_TO` (use `hello@adaptix.uk`, so the private inbox appears nowhere). `ENQUIRY_FROM` in `wrangler.jsonc` is the sending address on the domain.
+5. **Resend.** The DNS records Resend requires are in `infra/main.tf`; click Verify in Resend once they are applied. Create a sending-only API key and add it as the GitHub secret `RESEND_API_KEY`; the deploy workflow writes it to the Worker. Store the address that receives enquiry notifications as a secret: `npx wrangler secret put ENQUIRY_TO` (use `hello@adaptix.uk`, so the private inbox appears nowhere). `ENQUIRY_FROM` in `wrangler.jsonc` is the sending address on the domain.
 6. **IP hash salt.** `openssl rand -hex 32 | npx wrangler secret put IP_HASH_SALT`.
-7. **Access for /admin** is applied by OpenTofu (the Zero Trust team domain is keyvault.cloudflareaccess.com, set once in the dashboard). `ACCESS_AUD` and `ACCESS_TEAM_DOMAIN` in `wrangler.jsonc` come from the apply outputs. Store the administrators as a secret: `npx wrangler secret put ADMIN_EMAILS` (comma-separated). Until all three are set, `/admin` returns 503.
+7. **Access for /admin** is applied by OpenTofu (the Zero Trust team domain is keyvault.cloudflareaccess.com, set once in the dashboard). `ACCESS_AUD` and `ACCESS_TEAM_DOMAIN` in `wrangler.jsonc` come from the apply outputs. The administrators come from the GitHub secret `ADMIN_EMAILS` (comma-separated), written to the Worker by the deploy workflow. Until all three are set, `/admin` returns 503.
 8. **GitHub secrets.** Add `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1, Workers Routes and Zone DNS edit) and `CLOUDFLARE_ACCOUNT_ID` to the repository. Pushes to `main` then run migrations and deploy.
 
 `workers_dev` is disabled, so the Worker is reachable only on the custom domains. The admin page verifies the Access token itself, so a request that somehow bypasses Access is still refused.
@@ -47,6 +47,8 @@ Repository secrets the workflow needs:
 | `CLOUDFLARE_ACCOUNT_ID` | Shared with the deploy workflow |
 | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | R2 account API token with Object Read & Write on the state bucket |
 | `TF_VAR_ENQUIRY_DESTINATION_EMAIL` | The private inbox hello@ forwards to |
+| `ADMIN_EMAILS` | Comma-separated emails allowed to change or delete enquiries; written to the Worker on deploy |
+| `RESEND_API_KEY` | Resend sending-only key for adaptix.uk; written to the Worker on deploy |
 | `TF_VAR_ACCESS_ALLOWED_EMAILS` | JSON list of emails allowed into `/admin`, e.g. `["a@example.com","b@example.com"]` |
 
 The zone id and team name are not secret and sit in the workflow file. `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` in `wrangler.jsonc` come from the apply outputs `access_team_domain` and `access_aud`.
