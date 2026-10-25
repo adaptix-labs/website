@@ -27,12 +27,16 @@ export async function handleEnquiry(request: Request, env: Env, outbound: Outbou
   if (token === "") return reply.invalid({ turnstile: "Please complete the security check." });
 
   const ip = request.headers.get("cf-connecting-ip") ?? "";
+  const ipHash = await hashIp(ip, env.IP_HASH_SALT);
+  if (await overRateLimit(env.DB, ipHash)) {
+    return reply.tooMany();
+  }
   if (!(await verifyTurnstile(token, ip, env, outbound))) {
     return reply.forbidden("The security check failed. Please try again.");
   }
 
   const id = crypto.randomUUID();
-  await storeEnquiry(env.DB, id, validation.value, await hashIp(ip, env.IP_HASH_SALT));
+  await storeEnquiry(env.DB, id, validation.value, ipHash);
 
   const email = await sendEmail(validation.value, env, outbound);
   await env.DB.prepare("UPDATE enquiries SET email_status = ?, email_error = ? WHERE id = ?")
@@ -69,6 +73,20 @@ async function verifyTurnstile(token: string, ip: string, env: Env, outbound: Ou
   } catch {
     return false;
   }
+}
+
+const RATE_LIMIT = { max: 5, windowMinutes: 60 };
+
+async function overRateLimit(db: D1Database, ipHash: string | null): Promise<boolean> {
+  if (!ipHash) return false;
+  const row = await db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM enquiries
+       WHERE ip_hash = ? AND created_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ?)`,
+    )
+    .bind(ipHash, `-${RATE_LIMIT.windowMinutes} minutes`)
+    .first<{ n: number }>();
+  return (row?.n ?? 0) >= RATE_LIMIT.max;
 }
 
 async function hashIp(ip: string, salt: string): Promise<string | null> {
@@ -125,6 +143,8 @@ function responder(request: Request, env: Env) {
     ok: () => (wantsHtml ? back("sent=1") : json({ ok: true })),
     invalid: (errors: Record<string, string>) => (wantsHtml ? back("error=invalid") : json({ ok: false, errors }, 400)),
     forbidden: (message: string) => (wantsHtml ? back("error=check") : json({ ok: false, error: message }, 403)),
+    tooMany: () =>
+      wantsHtml ? back("error=busy") : json({ ok: false, error: "Too many enquiries from this connection. Please try again later." }, 429),
   };
 }
 
