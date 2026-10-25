@@ -43,9 +43,41 @@ describe("POST /api/enquiry", () => {
     expect(email.to).toEqual([env.ENQUIRY_TO]);
     expect(email.from).toBe(env.ENQUIRY_FROM);
     expect(email.reply_to).toBe("jane@example-school.sch.uk");
-    expect(String(email.subject)).toContain("School workshop");
+    expect(email.subject).toBe("New enquiry from Jane Teacher · School workshop");
     expect(String(email.text)).toContain("Example Primary School");
     expect(String(email.text)).toContain("Year 5 workshop");
+  });
+
+  it("sends a formatted HTML version alongside the plain text", async () => {
+    const outbound = fakeOutbound();
+    await postEnquiry(validFields, outbound);
+    const html = String(outbound.resendCalls[0].html);
+    expect(html).toContain("<!doctype html>");
+    expect(html).toContain("Jane Teacher");
+    expect(html).toContain("Example Primary School");
+    expect(html).toContain("Year 5 workshop");
+    expect(html).toContain('href="mailto:jane@example-school.sch.uk"');
+    expect(html).toContain('<img src="https://adaptix.uk/assets/adaptix-logo.png"');
+    expect(html).toContain('alt="Adaptix"');
+    expect(html).toContain('href="https://adaptix.uk/admin"');
+    expect(html).not.toContain("Reply to Jane");
+    expect(html).not.toContain(">Open admin<");
+  });
+
+  it("escapes visitor text in the HTML email", async () => {
+    const outbound = fakeOutbound();
+    await postEnquiry({ ...validFields, name: "Eve <script>alert(1)</script>", message: "a & b <b>bold</b>" }, outbound);
+    const html = String(outbound.resendCalls[0].html);
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("Eve &lt;script&gt;alert(1)&lt;/script&gt;");
+    expect(html).toContain("a &amp; b &lt;b&gt;bold&lt;/b&gt;");
+    expect(String(outbound.resendCalls[0].text)).toContain("a & b <b>bold</b>");
+  });
+
+  it("keeps message line breaks in the HTML email", async () => {
+    const outbound = fakeOutbound();
+    await postEnquiry({ ...validFields, message: "First line.\nSecond line." }, outbound);
+    expect(String(outbound.resendCalls[0].html)).toContain("First line.<br>Second line.");
   });
 
   it("keeps the enquiry and reports success when the email fails", async () => {
