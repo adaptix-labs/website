@@ -11,6 +11,13 @@ resource "cloudflare_d1_database" "enquiries" {
   account_id            = var.account_id
   name                  = "adaptix-enquiries"
   primary_location_hint = "weur" # keep enquiry data in Western Europe
+  read_replication      = { mode = "disabled" }
+
+  lifecycle {
+    # The location hint only applies at creation and is never reported back by the API,
+    # so without this an imported database would be planned for replacement.
+    ignore_changes = [primary_location_hint]
+  }
 }
 
 # --- Contact-form bot protection ------------------------------------------------------------
@@ -26,7 +33,8 @@ resource "cloudflare_turnstile_widget" "contact_form" {
 # --- Email: hello@ forwards to the private inbox --------------------------------------------
 
 resource "cloudflare_email_routing_settings" "zone" {
-  zone_id = var.zone_id
+  zone_id            = var.zone_id
+  support_subaddress = false
 }
 
 resource "cloudflare_email_routing_address" "enquiries_inbox" {

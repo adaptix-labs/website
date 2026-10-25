@@ -7,3 +7,4 @@ backend.hcl
 .terraform.lock.hcl.tmp
 crash.log
 .env
+*.tfplan
