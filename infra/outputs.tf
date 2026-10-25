@@ -22,6 +22,6 @@ output "d1_database_id" {
 
 output "enquiries_inbox_verified" {
   description = "Timestamp the destination inbox confirmed Cloudflare's verification email, or empty."
-  value       = cloudflare_email_routing_address.enquiries_inbox.verified
+  value       = cloudflare_email_routing_address.hello_destination.verified
   sensitive   = true
 }

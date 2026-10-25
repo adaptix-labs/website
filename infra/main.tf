@@ -37,7 +37,9 @@ resource "cloudflare_email_routing_settings" "zone" {
   support_subaddress = false
 }
 
-resource "cloudflare_email_routing_address" "enquiries_inbox" {
+# The private inbox that hello@ forwards to. It was verified by hand before Terraform managed it, so it is imported
+# (see imports.tf) rather than created; the previous destination is left in place, unmanaged.
+resource "cloudflare_email_routing_address" "hello_destination" {
   account_id = var.account_id
   email      = var.enquiry_destination_email
 }
@@ -55,7 +57,7 @@ resource "cloudflare_email_routing_rule" "hello" {
 
   actions = [{
     type  = "forward"
-    value = [cloudflare_email_routing_address.enquiries_inbox.email]
+    value = [cloudflare_email_routing_address.hello_destination.email]
   }]
 
   depends_on = [cloudflare_email_routing_settings.zone]
