@@ -77,6 +77,16 @@ describe("POST /api/enquiry", () => {
     expect(html).toMatch(/@media[^{]*max-width/);
   });
 
+  it("declares dark-mode support so mail apps do not invert it blindly", async () => {
+    const outbound = fakeOutbound();
+    await postEnquiry(validFields, outbound);
+    const html = String(outbound.resendCalls[0].html);
+    expect(html).toContain('<meta name="color-scheme" content="light dark">');
+    expect(html).toContain('<meta name="supported-color-schemes" content="light dark">');
+    expect(html).toMatch(/@media \(prefers-color-scheme: dark\)/);
+    expect(html).toMatch(/class="logo-plate"[^>]*background:#ffffff/);
+  });
+
   it("escapes visitor text in the HTML email", async () => {
     const outbound = fakeOutbound();
     await postEnquiry({ ...validFields, name: "Eve <script>alert(1)</script>", message: "a & b <b>bold</b>" }, outbound);
