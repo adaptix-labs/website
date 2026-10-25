@@ -58,7 +58,7 @@ describe("POST /api/enquiry", () => {
     expect(html).toContain("Example Primary School");
     expect(html).toContain("Year 5 workshop");
     expect(html).toContain('href="mailto:jane@example-school.sch.uk"');
-    expect(html).toContain('<img src="https://adaptix.uk/assets/adaptix-logo.png"');
+    expect(html).toContain('<img src="https://adaptix.uk/assets/adaptix-logo-email.png"');
     expect(html).toContain('alt="Adaptix"');
     expect(html).toContain('href="https://adaptix.uk/admin"');
     expect(html).not.toContain("Reply to Jane");
@@ -84,7 +84,9 @@ describe("POST /api/enquiry", () => {
     expect(html).toContain('<meta name="color-scheme" content="light dark">');
     expect(html).toContain('<meta name="supported-color-schemes" content="light dark">');
     expect(html).toMatch(/@media \(prefers-color-scheme: dark\)/);
-    expect(html).toMatch(/class="logo-plate"[^>]*background:#ffffff/);
+    expect(html).toContain("[data-ogsc] .ink"); // Outlook's dark-mode hook
+    expect(html).toContain('<img src="https://adaptix.uk/assets/adaptix-logo-email.png"');
+    expect(html).not.toContain("logo-plate");
   });
 
   it("escapes visitor text in the HTML email", async () => {

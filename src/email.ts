@@ -6,7 +6,8 @@ export interface EnquiryEmail {
   html: string;
 }
 
-const LOGO_URL = "https://adaptix.uk/assets/adaptix-logo.png";
+// The email logo carries its own white rounded plate, so mail apps that recolour backgrounds in dark mode leave it intact.
+const LOGO_URL = "https://adaptix.uk/assets/adaptix-logo-email.png";
 const FONT = "Arial,Helvetica,sans-serif";
 
 /** Notification sent to the team for each stored enquiry: plain text plus a formatted HTML version. */
@@ -76,6 +77,14 @@ export function renderEnquiryEmail(e: EnquiryInput, adminUrl: string): EnquiryEm
     .footer { background: #0f1b2a !important; border-color: #2a3b52 !important; }
     a { color: #9cc7ff !important; }
   }
+  /* Outlook (iOS, Android, outlook.com) applies dark mode without the media query; it exposes these attributes instead. */
+  [data-ogsb] .bg, [data-ogsb] .footer { background: #0f1b2a !important; }
+  [data-ogsb] .card { background: #16263a !important; }
+  [data-ogsb] .msgbox { background: #1d2f45 !important; }
+  [data-ogsc] .ink { color: #eef3f8 !important; }
+  [data-ogsc] .muted { color: #b3c2d1 !important; }
+  [data-ogsc] a { color: #9cc7ff !important; }
+  [data-ogsc] .card, [data-ogsc] .lines, [data-ogsc] .lines th, [data-ogsc] .lines td, [data-ogsc] .footer { border-color: #2a3b52 !important; }
 </style>
 </head>
 <body class="bg" style="margin:0;padding:0;background:#f8f7f2;-webkit-text-size-adjust:100%">
@@ -85,7 +94,7 @@ export function renderEnquiryEmail(e: EnquiryInput, adminUrl: string): EnquiryEm
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="card" style="max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #dde5ea">
         <tr>
           <td class="pad" style="padding:22px 28px 18px;border-bottom:4px solid #f9c742">
-            <span class="logo-plate" style="display:inline-block;background:#ffffff;padding:8px 12px;border-radius:12px;line-height:0"><img src="${LOGO_URL}" width="160" height="48" alt="Adaptix" style="display:block;height:48px;width:auto;border:0"></span>
+            <img src="${LOGO_URL}" width="194" height="78" alt="Adaptix" style="display:block;height:78px;width:auto;border:0;margin:-12px 0 -8px -14px">
           </td>
         </tr>
         <tr>
