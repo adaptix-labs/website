@@ -95,8 +95,13 @@ describe("admin listing", () => {
     const html = await (await admin("/admin", { token: await signJwt(keys, { email: "Boss@Adaptix.uk" }) })).text();
     expect(html).toContain('name="status"');
     expect(html).toContain("/admin/enquiries/id-1/delete");
-    // the delete disclosure reads as a button, with an icon hidden from assistive tech
-    expect(html).toMatch(/<summary class="btn del"[^>]*>\s*<svg[^>]*aria-hidden="true"/);
+    // Delete is a real button that opens a native popover dialog, icon hidden from assistive tech
+    expect(html).toMatch(/<button type="button" class="btn del danger" popovertarget="delete-id-1">\s*<svg[^>]*aria-hidden="true"/);
+    expect(html).toMatch(/<form method="post" action="\/admin\/enquiries\/id-1\/delete" class="confirm" id="delete-id-1" popover role="dialog" aria-labelledby="delete-id-1-title">/);
+    expect(html).toContain('<h3 id="delete-id-1-title">Delete this enquiry?</h3>');
+    // Cancel closes the dialog without a round trip, and takes focus first so Enter is safe
+    expect(html).toMatch(/<button type="button" class="btn" popovertarget="delete-id-1" popovertargetaction="hide" autofocus>Cancel<\/button>/);
+    expect(html).not.toContain("<summary class=\"btn del\"");
   });
 
   it("is structured for screen readers and small screens", async () => {
