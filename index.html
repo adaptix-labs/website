@@ -59,6 +59,23 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 :focus-visible{outline:3px solid #1c5a9c;outline-offset:3px}
 .msg{margin:16px 0 0;border-radius:12px;padding:16px 20px;font-size:16px;line-height:1.5}.msg[hidden]{display:none}
 .btn:disabled{opacity:.6;cursor:wait}
+
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.nav{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+.lift,.card{min-width:0}
+.menu{display:none;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid #dde5ea;border-radius:12px;background:#fff;cursor:pointer;padding:0}
+.menu .bars{display:block;width:22px;height:2px;border-radius:2px;background:#102b48;box-shadow:0 -7px 0 #102b48,0 7px 0 #102b48}
+.menu[aria-expanded="true"] .bars{background:transparent;box-shadow:none;position:relative}
+.menu[aria-expanded="true"] .bars::before,.menu[aria-expanded="true"] .bars::after{content:"";position:absolute;left:0;top:0;width:22px;height:2px;border-radius:2px;background:#102b48;transform:rotate(45deg)}
+.menu[aria-expanded="true"] .bars::after{transform:rotate(-45deg)}
+@media(max-width:860px){
+.menu{display:inline-flex}
+.nav{display:none;width:100%;flex-direction:column;align-items:stretch;gap:2px;padding:8px 0 10px;border-top:1px solid #e3eaef;margin-top:10px}
+.nav.open{display:flex}
+.nav .nl{display:block;padding:12px 4px;font-size:17px}
+.nav .btn{margin-top:10px}
+}
+@media(max-width:400px){#about .lift{flex-direction:column;align-items:flex-start!important;gap:6px!important}}
 </style>
 </head>
 <body>
@@ -67,13 +84,14 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 <header style="position:sticky;top:0;z-index:20;background:#ffffffee;border-bottom:1px solid #e3eaef">
 <div style="max-width:1200px;margin:0 auto;padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
 <a href="#top"><img src="assets/adaptix-logo.png" alt="Adaptix – Learning in motion" style="height:54px;width:auto;display:block"></a>
-<nav style="display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+<button class="menu" type="button" aria-expanded="false" aria-controls="nav"><span class="vh">Menu</span><span class="bars" aria-hidden="true"></span></button>
+<nav id="nav" class="nav" aria-label="Main">
 <a class="nl" href="#about">About</a><a class="nl" href="#solutions">Solutions</a><a class="nl" href="#workshop">Workshops</a><a class="nl" href="#team">Team</a><a class="nl" href="#faq">FAQ</a>
 <a class="btn" href="#contact" style="min-height:44px;padding:0 22px;color:#fff">Get in touch</a>
 </nav></div></header>
 
 <section id="top" style="background:radial-gradient(circle at 12% 18%,#f9c74255,transparent 38%),radial-gradient(circle at 88% 75%,#1c5a9c33,transparent 42%),radial-gradient(#102b4818 1.5px,transparent 1.5px) 0 0/24px 24px,#f8f7f2;padding:96px 32px">
-<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:56px;align-items:center">
+<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:56px;align-items:center">
 <div>
 <p class="eb fu">Adaptix Educational Solutions Ltd</p>
 <h1 class="h fu" style="font-size:clamp(38px,7vw,62px)">Engineering curiosity. <span style="box-shadow:inset 0 -.22em #f9c742">Learning in motion.</span></h1>
@@ -87,7 +105,7 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 <div class="road"><div class="dash"></div><svg class="drive" width="168" height="52" viewBox="0 0 196 60" aria-hidden="true"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6b5c"></stop><stop offset=".5" stop-color="#e23b3b"></stop><stop offset="1" stop-color="#b82929"></stop></linearGradient></defs><g class="pf"><circle cx="6" cy="30" r="5" fill="#fff" opacity=".8"></circle></g><g class="pf" style="animation-delay:.5s"><circle cx="6" cy="26" r="4" fill="#fff" opacity=".8"></circle></g><g class="bob"><ellipse cx="100" cy="33" rx="92" ry="25" fill="#000" opacity=".18"></ellipse><rect x="38" y="18" width="3" height="24" fill="#102b48"></rect><rect x="141" y="16" width="3" height="28" fill="#102b48"></rect><rect x="26" y="2" width="28" height="15" rx="5" fill="#161616"></rect><rect x="29" y="4" width="22" height="11" rx="3" fill="#2a2a2a"></rect><rect x="26" y="43" width="28" height="15" rx="5" fill="#161616"></rect><rect x="29" y="45" width="22" height="11" rx="3" fill="#2a2a2a"></rect><rect x="126" y="5" width="24" height="13" rx="5" fill="#161616"></rect><rect x="129" y="7" width="18" height="9" rx="3" fill="#2a2a2a"></rect><rect x="126" y="42" width="24" height="13" rx="5" fill="#161616"></rect><rect x="129" y="44" width="18" height="9" rx="3" fill="#2a2a2a"></rect><rect x="6" y="6" width="10" height="48" rx="2" fill="#102b48"></rect><rect x="6" y="4" width="10" height="4" fill="#f9c742"></rect><rect x="6" y="52" width="10" height="4" fill="#f9c742"></rect><rect x="8" y="26" width="14" height="8" fill="#f9c742"></rect><path d="M16 23 H68 C78 13 104 13 114 20 L152 26 L184 28.5 V31.5 L152 34 L114 40 C104 47 78 47 68 37 H16 Z" fill="url(#cg)"></path><ellipse cx="88" cy="30" rx="22" ry="12" fill="#ff8a7c" opacity=".45"></ellipse><rect x="22" y="28.4" width="160" height="3.2" fill="#f9c742"></rect><circle cx="62" cy="30" r="7" fill="#fff"></circle><text x="62" y="34.5" text-anchor="middle" font-family="Sora,sans-serif" font-weight="800" font-size="11" fill="#102b48">1</text><ellipse cx="104" cy="30" rx="12" ry="8" fill="#102b48"></ellipse><circle cx="102" cy="30" r="6.5" fill="#f9c742"></circle><path d="M108 24 Q115 30 108 36" fill="none" stroke="#102b48" stroke-width="2.5"></path><rect x="180" y="8" width="9" height="44" rx="2" fill="#102b48"></rect><rect x="180" y="6" width="9" height="3.5" fill="#f9c742"></rect><rect x="180" y="50.5" width="9" height="3.5" fill="#f9c742"></rect></g></svg></div><section style="background:#f9c742;color:#102b48;padding:18px 0;overflow:hidden"><div class="tick" style="font-family:Sora,sans-serif;font-size:26px;font-weight:800;letter-spacing:.01em;text-transform:uppercase;white-space:nowrap"><span style="margin-right:48px">Creative engineering<span style="color:#102b48;margin-left:48px">●</span></span><span style="margin-right:48px">Hands-on learning<span style="color:#102b48;margin-left:48px">●</span></span><span style="margin-right:48px">Real-world maths<span style="color:#102b48;margin-left:48px">●</span></span><span style="margin-right:48px">Future-ready skills<span style="color:#102b48;margin-left:48px">●</span></span><span style="margin-right:48px">Creative engineering<span style="color:#102b48;margin-left:48px">●</span></span><span style="margin-right:48px">Hands-on learning<span style="color:#102b48;margin-left:48px">●</span></span><span style="margin-right:48px">Real-world maths<span style="color:#102b48;margin-left:48px">●</span></span><span style="margin-right:48px">Future-ready skills<span style="color:#102b48;margin-left:48px">●</span></span></div></section>
 
 <section id="about" style="padding:110px 32px;position:relative;overflow:hidden"><div class="fl" style="position:absolute;top:-110px;right:-70px;width:320px;height:320px;border-radius:50%;background:#f9c742;opacity:.28"></div><div class="fl2" style="position:absolute;bottom:-90px;left:-80px;width:240px;height:240px;border-radius:50%;background:#9fc3e4;opacity:.3"></div>
-<div style="position:relative;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:64px;align-items:center">
+<div style="position:relative;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:64px;align-items:center">
 <div><p class="eb">Who we are</p><h2 class="h rv" style="font-size:clamp(32px,7vw,54px)">More than a workshop. <span style="box-shadow:inset 0 -.22em #f9c742">A new way to learn.</span></h2>
 <p style="font-size:19px;color:#43596a;margin:24px 0 0">Adaptix is a UK educational solutions company combining engineering, technology and creativity, so learners can see why classroom knowledge matters.</p>
 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:26px"><span class="chip">UK-based</span><span class="chip">Schools first</span><span class="chip">Hands-on by design</span></div>
@@ -106,7 +124,7 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 </div></div></section>
 
 <section id="workshop" style="background:#102b48;color:#eef5fa;padding:104px 32px">
-<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:64px;align-items:center">
+<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:64px;align-items:center">
 <div><p class="eb" style="color:#f9c742">Flagship school experience</p><h2 class="h" style="font-size:clamp(32px,7vw,48px);color:#fff">Junior Race Engineer.</h2>
 <p style="font-size:19px;color:#d7e6f3;margin:20px 0 0">A hands-on introduction to engineering through the exciting context of motorsport. Pupils design and test ideas, connect practical activities to maths and discover the many roles in engineering.</p>
 <ul style="list-style:none;padding:0;margin:24px 0 0;display:grid;gap:10px">
@@ -119,7 +137,7 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 
 <section style="padding:104px 32px 120px;background:#eaf4f7"><div style="max-width:1200px;margin:0 auto"><p class="eb">In the classroom</p><h2 class="h rv" style="font-size:clamp(30px,6vw,44px);max-width:760px">Real pupils. Real builds. Real races.</h2><p style="color:#43596a;max-width:620px;margin:16px 0 0">Moments from an Adaptix workshop, where learning is something pupils do with their hands.</p>
 <div class="gal"><div class="ph rv t1"><img loading="lazy" decoding="async" src="assets/instructor-guiding.jpg" alt="Adaptix instructor guiding pupils as they build race cars"><div class="cap">Build · Pupils assemble their own cars</div></div><div class="ph rv t2"><img loading="lazy" decoding="async" src="assets/reading-instructions.jpg" alt="A pupil studying the assembly instructions"><div class="cap">Plan · Read the instructions first</div></div><div class="ph rv t3"><img loading="lazy" decoding="async" src="assets/testing-on-track.jpg" alt="Pupils testing a car on a paper track"><div class="cap">Test · Measure, compare, improve</div></div></div></div></section><section style="padding:104px 32px">
-<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px">
+<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:24px">
 <div class="card rv lift" style="background:#eaf4f7;border-color:#cfe2ea"><p class="eb">Learning beyond a visit</p><h3 class="h" style="font-size:30px">Resources that give teachers more to build on.</h3><p style="margin:14px 0 0;color:#43596a">Our initial direction includes sample maths lessons inspired by motorsport, with slides, worksheets at appropriate challenge levels and delivery guidance. These are in development, not yet a completed curriculum.</p></div>
 <div class="card rv lift" style="background:#f8f7f2;border-color:#e6e2d4"><p class="eb">Research &amp; innovation</p><h3 class="h" style="font-size:30px">Race to Play</h3><p style="margin:14px 0 0;color:#43596a">A proposed research and development initiative exploring hands-on motorsport play for young people aged 7–16, including learning, inclusion and engineering-career awareness. This is a proposed funding initiative, not an awarded programme.</p></div>
 </div></section>
@@ -128,7 +146,7 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 <div style="max-width:1200px;margin:0 auto">
 <p class="eb">About Adaptix</p><h2 class="h rv" style="font-size:clamp(30px,6vw,44px);max-width:700px">Education and engineering, working together.</h2>
 <p style="color:#43596a;max-width:720px;margin:18px 0 0">Our founding team brings together engineering education, development of learning experiences and business operations. Adaptix participates in the University of Nottingham Ingenuity Lab entrepreneurship environment; this does not imply university sponsorship or endorsement.</p>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:44px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px;margin-top:44px">
 <div class="card rv lift"><div style="width:56px;height:56px;border-radius:50%;background:#102b48;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-weight:800;font-size:19px;margin-bottom:16px">MH</div><h3 class="h" style="font-size:21px">Dr Mohamed Hafez</h3><p style="margin:8px 0 0;color:#43596a;font-size:16px">Co-founder · Engineering, strategy and research funding</p></div>
 <div class="card rv lift"><div style="width:56px;height:56px;border-radius:50%;background:#1c5a9c;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-weight:800;font-size:19px;margin-bottom:16px">MM</div><h3 class="h" style="font-size:21px">Dr Mostafa Mohamed</h3><p style="margin:8px 0 0;color:#43596a;font-size:16px">Co-founder · Learning design and educational development</p></div>
 <div class="card rv lift"><div style="width:56px;height:56px;border-radius:50%;background:#f9c742;color:#102b48;display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-weight:800;font-size:19px;margin-bottom:16px">ER</div><h3 class="h" style="font-size:21px">Eslam Rezk</h3><p style="margin:8px 0 0;color:#43596a;font-size:16px">Co-founder · Business operations and development</p></div>
@@ -144,11 +162,11 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 </div></section>
 
 <section id="contact" style="background:#102b48;padding:104px 32px">
-<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:64px">
+<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:64px">
 <div><p class="eb" style="color:#f9c742">Start a conversation</p><h2 class="h" style="font-size:clamp(32px,7vw,48px);color:#fff">Let's make learning move.</h2>
 <p style="font-size:19px;color:#d7e6f3;margin:20px 0 0">Interested in a school workshop, learning resources or a partnership? Tell us a little about what you have in mind. We would be pleased to hear from schools, educators and collaborators.</p></div>
 <form id="enquiry" action="https://docs.google.com/forms/d/e/1FAIpQLSd3tW8njp6FMSxBN26UTwdS04rvJquBcqUC4UPLwXuNSXen4A/formResponse" method="POST" target="_blank" style="background:#fff;border-radius:24px;padding:36px">
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:18px">
 <label class="fld">Your name *<input type="text" name="entry.2005589898" autocomplete="name" required=""></label>
 <label class="fld">Work email *<input type="email" name="entry.520765193" autocomplete="email" required=""></label>
 <label class="fld">Phone<input type="tel" name="entry.738909185" autocomplete="tel"></label>
@@ -171,6 +189,12 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 f.addEventListener('submit',function(e){e.preventDefault();if(f.elements.website&&f.elements.website.value)return;ok.hidden=true;err.hidden=true;btn.disabled=true;var label=btn.textContent;btn.textContent='Sending\u2026';
 var d=new FormData(f);d.delete('website');
 fetch(f.action,{method:'POST',mode:'no-cors',body:new URLSearchParams(d)}).then(function(){f.reset();ok.hidden=false;ok.scrollIntoView({block:'nearest',behavior:'smooth'})}).catch(function(){err.hidden=false}).then(function(){btn.disabled=false;btn.textContent=label})});})();
+
+(function(){var b=document.querySelector('.menu'),n=document.getElementById('nav');if(!b||!n)return;
+function set(o){n.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'true':'false')}
+b.addEventListener('click',function(){set(!n.classList.contains('open'))});
+n.addEventListener('click',function(e){if(e.target.closest('a'))set(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('open')){set(false);b.focus()}});})();
 </script>
 </body>
 </html>
