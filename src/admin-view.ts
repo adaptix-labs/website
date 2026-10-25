@@ -145,8 +145,8 @@ h1{margin:0;font:800 32px/1.1 Sora,Inter,sans-serif;color:var(--navy);letter-spa
 .btn:hover{background:#eaf4f7}
 .btn.primary{background:var(--yellow);border-color:var(--yellow);min-width:0}.btn.primary:hover{background:#ffd966}
 .btn.del{border-color:#b42318;color:#b42318}.btn.del:hover{background:#fdecec}
-.filters{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
-.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #cfe0ec;background:#fff;color:var(--navy);font-weight:600;text-decoration:none}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;max-width:640px;margin:24px 0}
+.chip{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #cfe0ec;background:#fff;color:var(--navy);font-weight:600;text-decoration:none;white-space:nowrap}
 .chip .n{font-weight:500;color:var(--muted)}
 .chip.on{background:var(--navy);border-color:var(--navy);color:#fff}.chip.on .n{color:#cfe0ec}
 .cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
