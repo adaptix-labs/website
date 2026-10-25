@@ -77,13 +77,12 @@ function card(r: EnquiryRow, who: Identity): string {
         <select id="status-${id}" name="status">${STATUSES.map((s) => `<option value="${s}"${s === r.status ? " selected" : ""}>${label(s)}</option>`).join("")}</select>
         <button type="submit" class="btn">Save</button>
       </form>
-      <details class="danger">
-        <summary class="btn del"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg><span class="label">Delete</span></summary>
-        <form method="post" action="/admin/enquiries/${id}/delete">
-          <p>Permanently delete this enquiry from ${esc(r.name)}?</p>
-          <button type="submit" class="btn del">Yes, delete it</button>
-        </form>
-      </details>`
+      <button type="button" class="btn del danger" popovertarget="delete-${id}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg><span class="label">Delete</span></button>
+      <form method="post" action="/admin/enquiries/${id}/delete" class="confirm" id="delete-${id}" popover role="dialog" aria-labelledby="delete-${id}-title">
+        <h3 id="delete-${id}-title">Delete this enquiry?</h3>
+        <p>The enquiry from ${esc(r.name)} will be removed permanently. This cannot be undone.</p>
+        <span class="choices"><button type="button" class="btn" popovertarget="delete-${id}" popovertargetaction="hide" autofocus>Cancel</button><button type="submit" class="btn del">Yes, delete it</button></span>
+      </form>`
     : "";
   return `
     <li>
@@ -162,7 +161,7 @@ h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-sp
 .facts div{margin:0}.facts dt{font-size:13px;font-weight:600;color:var(--muted)}.facts dd{margin:2px 0 0;overflow-wrap:anywhere}
 .msg{margin:16px 0 0;padding:14px 16px;background:#eaf4f7;border-left:4px solid var(--yellow);border-radius:0 12px 12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .muted{color:var(--muted)}
-.foot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-start;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid #eef2f5}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid #eef2f5}
 .mail{margin:0;font-size:13px;font-weight:700}
 .mail.ok,.mail.bad summary,.mail:not(.ok):not(.bad){display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;line-height:1;background:#eef2f5;color:var(--muted)}
 .mail.ok{background:#e8f0e8;color:#2f6b3a}
@@ -172,12 +171,18 @@ h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-sp
 .status label{font-size:14px;font-weight:600;color:var(--muted)}
 select{height:44px;padding:0 40px 0 18px;border-radius:999px;border:2px solid var(--navy);font-weight:600;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23102b48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;appearance:none;-webkit-appearance:none;font-family:inherit;font-size:15px;color:var(--navy);cursor:pointer}
 summary{list-style:none}summary::-webkit-details-marker{display:none}
-.status .btn,.danger summary{min-width:116px}.danger summary{gap:8px;cursor:pointer}.danger summary svg{flex:none}.danger[open] summary{background:#fdecec}
-.danger form{margin:10px 0 0;padding:14px 16px;background:#fdecec;border-radius:12px}.danger p{margin:0 0 10px}
+.status .btn,.danger{min-width:116px}.danger{gap:8px}.danger svg{flex:none}
+.danger{justify-self:end}
+.confirm{inset:0;margin:auto;box-sizing:border-box;width:min(440px,calc(100% - 32px));padding:24px;border:0;border-radius:18px;background:#fff;color:var(--ink);box-shadow:0 24px 64px rgba(11,31,59,.28)}
+.confirm::backdrop{background:rgba(11,31,59,.45)}
+.confirm h3{margin:0 0 8px;font-size:20px;line-height:1.25;color:var(--navy)}
+.confirm p{margin:0 0 20px;color:var(--muted)}
+.choices{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px}
+@media(prefers-reduced-motion:no-preference){.confirm:popover-open{animation:pop .16s ease-out}}@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .chev{flex:none;transition:transform .15s}
 .mail.bad[open] .chev{transform:rotate(180deg)}
 .empty{padding:40px 24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:20px}
-@media(max-width:600px){.top{padding:12px 16px}.brand img{height:44px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{flex-wrap:nowrap;gap:8px;align-items:flex-start}.foot .status{flex:1 1 auto;flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}.status .btn{min-width:0;padding:0 16px}.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.danger summary{width:44px;min-width:44px;padding:0;gap:0}.danger summary .label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.foot:has(.danger[open]){flex-wrap:wrap}.danger[open]{flex:1 0 100%}.danger[open] summary{width:auto;min-width:0;padding:0 16px;gap:8px}.danger[open] summary .label{position:static;width:auto;height:auto;clip:auto;clip-path:none}}
+@media(max-width:600px){.top{padding:12px 16px}.brand img{height:44px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{gap:8px}.foot .status{flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}.status .btn{min-width:0;padding:0 16px}.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.danger{width:44px;min-width:44px;padding:0;gap:0}.danger .label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.confirm .choices{justify-content:stretch}.confirm .choices .btn{flex:1 1 0}}
 </style>
 </head>
 <body>${body}
