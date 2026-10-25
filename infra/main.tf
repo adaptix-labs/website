@@ -91,6 +91,14 @@ resource "cloudflare_dns_record" "resend" {
 
 # --- Admin page: Cloudflare Access ----------------------------------------------------------
 
+# Staff sign in with a one-time code sent to their email; no Cloudflare account is needed.
+resource "cloudflare_zero_trust_access_identity_provider" "one_time_pin" {
+  account_id = var.account_id
+  name       = "Email one-time code"
+  type       = "onetimepin"
+  config     = {}
+}
+
 resource "cloudflare_zero_trust_access_policy" "staff" {
   account_id = var.account_id
   name       = "Adaptix staff"
@@ -106,8 +114,11 @@ resource "cloudflare_zero_trust_access_application" "admin" {
   domain                     = "${var.domain}/admin"
   session_duration           = "24h"
   app_launcher_visible       = false
-  auto_redirect_to_identity  = false
   http_only_cookie_attribute = true
+
+  # Only the email code method is offered, and the chooser step is skipped.
+  allowed_idps              = [cloudflare_zero_trust_access_identity_provider.one_time_pin.id]
+  auto_redirect_to_identity = true
 
   destinations = [
     { type = "public", uri = "${var.domain}/admin" },
