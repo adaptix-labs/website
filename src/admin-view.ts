@@ -78,7 +78,7 @@ function card(r: EnquiryRow, who: Identity): string {
         <button type="submit" class="btn">Save</button>
       </form>
       <details class="danger">
-        <summary class="btn del"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>Delete</summary>
+        <summary class="btn del"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg><span class="label">Delete</span></summary>
         <form method="post" action="/admin/enquiries/${id}/delete">
           <p>Permanently delete this enquiry from ${esc(r.name)}?</p>
           <button type="submit" class="btn del">Yes, delete it</button>
@@ -91,7 +91,7 @@ function card(r: EnquiryRow, who: Identity): string {
         <div class="head">
           <div>
             <h2 id="enquiry-${id}-name">${esc(r.name)}</h2>
-            <p class="meta"><span class="badge ${r.status}">${label(r.status)}</span> <span class="interest">${esc(r.interest)}</span></p>
+            <div class="meta"><span class="badge ${r.status}">${label(r.status)}</span> <span class="interest">${esc(r.interest)}</span> ${delivery}</div>
           </div>
           <p class="when">Received <time datetime="${esc(r.created_at)}">${esc(formatDate(r.created_at))}</time></p>
         </div>
@@ -102,10 +102,7 @@ function card(r: EnquiryRow, who: Identity): string {
         </dl>
         <h3 class="vh">Message</h3>
         <p class="msg">${r.message ? esc(r.message) : '<span class="muted">No message was written.</span>'}</p>
-        <div class="foot">
-          ${delivery}
-          ${controls}
-        </div>
+        ${controls ? `<div class="foot">${controls}</div>` : ""}
       </article>
     </li>`;
 }
@@ -155,6 +152,7 @@ h1{margin:0;font:800 32px/1.1 Sora,Inter,sans-serif;color:var(--navy);letter-spa
 .head{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:flex-start}
 h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-spacing:-.01em;overflow-wrap:anywhere}
 .meta{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--muted)}
+.meta .mail.bad[open]{flex:1 0 100%}
 .badge{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;font-size:13px;line-height:1;font-weight:700;background:#eaf4f7;color:var(--blue)}
 .badge.contacted{background:#fff4d6;color:#7a5a00}.badge.closed{background:#e8f0e8;color:#2f6b3a}
 .when{margin:0;font-size:14px;color:var(--muted)}
@@ -162,7 +160,7 @@ h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-sp
 .facts div{margin:0}.facts dt{font-size:13px;font-weight:600;color:var(--muted)}.facts dd{margin:2px 0 0;overflow-wrap:anywhere}
 .msg{margin:16px 0 0;padding:14px 16px;background:#eaf4f7;border-left:4px solid var(--yellow);border-radius:0 12px 12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .muted{color:var(--muted)}
-.foot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid #eef2f5}
+.foot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-start;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid #eef2f5}
 .mail{margin:0;font-size:13px;font-weight:700}
 .mail.ok,.mail.bad summary,.mail:not(.ok):not(.bad){display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;line-height:1;background:#eef2f5;color:var(--muted)}
 .mail.ok{background:#e8f0e8;color:#2f6b3a}
@@ -177,8 +175,7 @@ summary{list-style:none}summary::-webkit-details-marker{display:none}
 .chev{flex:none;transition:transform .15s}
 .mail.bad[open] .chev{transform:rotate(180deg)}
 .empty{padding:40px 24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:20px}
-@media(max-width:600px){.top{padding:12px 16px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{align-items:center;gap:12px 16px}.foot .danger{margin-left:auto}.foot .danger[open]{width:100%;margin-left:0}.foot .status{order:3;width:100%;flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}}
-@media(max-width:360px){.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}}
+@media(max-width:600px){.top{padding:12px 16px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{flex-wrap:nowrap;gap:8px;align-items:flex-start}.foot .status{flex:1 1 auto;flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}.status .btn{min-width:0;padding:0 16px}.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.danger summary{width:44px;min-width:44px;padding:0;gap:0}.danger summary .label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.foot:has(.danger[open]){flex-wrap:wrap}.danger[open]{flex:1 0 100%}.danger[open] summary{width:auto;min-width:0;padding:0 16px;gap:8px}.danger[open] summary .label{position:static;width:auto;height:auto;clip:auto;clip-path:none}}
 </style>
 </head>
 <body>${body}
