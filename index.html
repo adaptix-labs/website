@@ -49,7 +49,8 @@ details p{margin:12px 0 0;color:#43596a;line-height:1.7}
 .row{transition:transform .3s,background .3s}.row:hover{transform:translateX(8px);background:#ffffff20!important}
 .chip{border:1.5px solid #cfe0ec;background:#eaf4f7;border-radius:999px;padding:8px 16px;font-weight:600;font-size:14px;color:#102b48}
 .pulse{animation:pulse 2.4s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 #f9c74299}70%,100%{box-shadow:0 0 0 18px #f9c74200}}
-.rot{display:inline-block;height:1.65em;line-height:1.65em;overflow:hidden;vertical-align:top;color:#1c5a9c;font-weight:800}
+.rot{display:inline-block;height:1.65em;line-height:1.65em;overflow:hidden;vertical-align:top;color:#1c5a9c;font-weight:800;transition:width .45s ease}
+.rot.js>span{animation:none;transition:transform .5s ease}
 .rot>span{display:block;animation:rot 10s infinite}.rot i{display:block;height:1.65em;font-style:normal}
 @keyframes rot{0%,20%{transform:translateY(0)}25%,45%{transform:translateY(-1.65em)}50%,70%{transform:translateY(-3.3em)}75%,95%{transform:translateY(-4.95em)}100%{transform:translateY(-6.6em)}}
 .gal .ph{border:10px solid #fff;border-radius:14px;box-shadow:0 24px 40px -20px #102b4866;transition:rotate .4s}
@@ -201,6 +202,14 @@ function set(o){n.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'t
 b.addEventListener('click',function(){set(!n.classList.contains('open'))});
 n.addEventListener('click',function(e){if(e.target.closest('a'))set(false)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('open')){set(false);b.focus()}});})();
+
+(function(){var r=document.querySelector('.rot');if(!r)return;var s=r.firstElementChild,ws=[].slice.call(s.children),i=0;
+function w(el){var g=document.createRange();g.selectNodeContents(el);return g.getBoundingClientRect().width}
+function fit(){r.style.width=Math.ceil(w(ws[i]))+'px'}
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('js');fit();if(document.fonts)document.fonts.ready.then(fit);return}
+r.classList.add('js');fit();if(document.fonts)document.fonts.ready.then(fit);window.addEventListener('resize',fit);
+setInterval(function(){i++;s.style.transform='translateY(-'+(i*1.65)+'em)';fit();
+if(i===ws.length-1){setTimeout(function(){s.style.transition='none';s.style.transform='none';i=0;void s.offsetHeight;s.style.transition=''},520)}},2500);})();
 </script>
 </body>
 </html>
