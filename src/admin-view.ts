@@ -149,7 +149,8 @@ h1{margin:0;font:800 32px/1.1 Sora,Inter,sans-serif;color:var(--navy);letter-spa
 .chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #cfe0ec;background:#fff;color:var(--navy);font-weight:600;text-decoration:none}
 .chip .n{font-weight:500;color:var(--muted)}
 .chip.on{background:var(--navy);border-color:var(--navy);color:#fff}.chip.on .n{color:#cfe0ec}
-.cards{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+.cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.cards>li,.card,.foot,.status{min-width:0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 24px}
 .head{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:flex-start}
 h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-spacing:-.01em;overflow-wrap:anywhere}
@@ -172,7 +173,8 @@ summary{list-style:none}summary::-webkit-details-marker{display:none}
 .chev{display:inline-block;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:6px}
 .mail.bad[open] .chev{transform:rotate(-135deg) translateY(-2px)}
 .empty{padding:40px 24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:20px}
-@media(max-width:600px){.top{padding:12px 16px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{flex-direction:column;align-items:stretch}.status{justify-content:space-between}.status select{flex:1}}
+@media(max-width:600px){.top{padding:12px 16px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{align-items:center;gap:12px 16px}.foot .danger{margin-left:auto}.foot .danger[open]{width:100%;margin-left:0}.foot .status{order:3;width:100%;flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}}
+@media(max-width:360px){.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}}
 </style>
 </head>
 <body>${body}
