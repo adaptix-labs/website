@@ -4,6 +4,3 @@ zone_id                   = "00000000000000000000000000000000"
 access_team_name          = "keyvault"
 enquiry_destination_email = "someone@example.com"
 access_allowed_emails     = ["someone@example.com"]
-
-# From the Resend dashboard after adding the domain:
-resend_dns_records = []

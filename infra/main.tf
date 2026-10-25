@@ -74,19 +74,45 @@ resource "cloudflare_email_routing_catch_all" "drop" {
   depends_on = [cloudflare_email_routing_settings.zone]
 }
 
-# --- Email: Resend domain verification records ----------------------------------------------
+# --- Email: Resend sending domain -----------------------------------------------------------
+# Public DNS values shown by Resend when adaptix.uk was added (region eu-west-1). Sending uses the
+# `send` return-path subdomain, so nothing here touches the apex MX records that Email Routing owns.
+
+locals {
+  resend_dns_records = {
+    dkim = {
+      name    = "resend._domainkey"
+      type    = "TXT"
+      content = "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8/CqiivItfau6eWoZ/q5wFcRw/buv0t+xmncUUchFaa1La+pA8/Y7Q8qRS3wjaiweOj/f3d4PDsZyP9HVfjXPbCKLWtcF7ebDLd6wQ1JKZlWYDrQw9mPkCUurS9O14QGpXC3j9Z5/7ec9ORDDb2wRK1g0jgDSIBfWAhHwFreBsQIDAQAB"
+    }
+    spf_rsend = {
+      name    = "rsend"
+      type    = "CNAME"
+      content = "rsend-euw1.forge.rmta.net"
+    }
+    spf_send = {
+      name    = "send"
+      type    = "CNAME"
+      content = "send.forge.rmta.net"
+    }
+    dmarc = {
+      name    = "_dmarc"
+      type    = "TXT"
+      content = "v=DMARC1; p=none;" # monitor only; tighten to quarantine once sending is proven
+    }
+  }
+}
 
 resource "cloudflare_dns_record" "resend" {
-  for_each = { for r in var.resend_dns_records : "${r.type}-${r.name}" => r }
+  for_each = local.resend_dns_records
 
-  zone_id  = var.zone_id
-  name     = each.value.name == "@" ? var.domain : "${each.value.name}.${var.domain}"
-  type     = each.value.type
-  content  = each.value.content
-  priority = each.value.priority
-  ttl      = 1 # automatic
-  proxied  = false
-  comment  = "Resend domain verification"
+  zone_id = var.zone_id
+  name    = "${each.value.name}.${var.domain}"
+  type    = each.value.type
+  content = each.value.content
+  ttl     = 1 # automatic
+  proxied = false
+  comment = "Resend sending domain"
 }
 
 # --- Admin page: Cloudflare Access ----------------------------------------------------------
