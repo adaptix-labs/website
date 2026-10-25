@@ -7,11 +7,3 @@ access_allowed_emails     = ["someone@example.com"]
 
 # From the Resend dashboard after adding the domain:
 resend_dns_records = []
-
-# Ids of the resources created before Terraform (print them with scripts/lookup-ids.sh):
-import_ids = {
-  d1_database           = "00000000-0000-0000-0000-000000000000"
-  turnstile_sitekey     = "0x4AAAAAAFlH8ecwXeDRbixw"
-  email_routing_address = ""
-  email_routing_rule    = ""
-}

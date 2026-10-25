@@ -28,7 +28,7 @@ The page ships with Cloudflare's always-passing Turnstile **test** site key, so 
 4. **Email Routing** is applied by OpenTofu; the private inbox must click the verification link Cloudflare emails it before forwarding starts. hello@adaptix.uk is the public contact address on the page.
 5. **Resend.** Verify `adaptix.uk` in Resend (two DNS records) and store the key: `npx wrangler secret put RESEND_API_KEY`. Store the address that receives enquiry notifications as a secret: `npx wrangler secret put ENQUIRY_TO` (use `hello@adaptix.uk`, so the private inbox appears nowhere). `ENQUIRY_FROM` in `wrangler.jsonc` is the sending address on the domain.
 6. **IP hash salt.** `openssl rand -hex 32 | npx wrangler secret put IP_HASH_SALT`.
-7. **Access for /admin** is applied by OpenTofu (the Zero Trust team domain is keyvault.cloudflareaccess.com, set once in the dashboard). Copy the `access_aud` and `access_team_domain` outputs into `ACCESS_AUD` and `ACCESS_TEAM_DOMAIN` in `wrangler.jsonc`, and put the administrators' emails in `ADMIN_EMAILS`. Until these are set, `/admin` returns 503.
+7. **Access for /admin** is applied by OpenTofu (the Zero Trust team domain is keyvault.cloudflareaccess.com, set once in the dashboard). `ACCESS_AUD` and `ACCESS_TEAM_DOMAIN` in `wrangler.jsonc` come from the apply outputs. Store the administrators as a secret: `npx wrangler secret put ADMIN_EMAILS` (comma-separated). Until all three are set, `/admin` returns 503.
 8. **GitHub secrets.** Add `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1, Workers Routes and Zone DNS edit) and `CLOUDFLARE_ACCOUNT_ID` to the repository. Pushes to `main` then run migrations and deploy.
 
 `workers_dev` is disabled, so the Worker is reachable only on the custom domains. The admin page verifies the Access token itself, so a request that somehow bypasses Access is still refused.
@@ -48,11 +48,19 @@ Repository secrets the workflow needs:
 | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | R2 account API token with Object Read & Write on the state bucket |
 | `TF_VAR_ENQUIRY_DESTINATION_EMAIL` | The private inbox hello@ forwards to |
 | `TF_VAR_ACCESS_ALLOWED_EMAILS` | JSON list of emails allowed into `/admin`, e.g. `["a@example.com","b@example.com"]` |
-| `TF_VAR_IMPORT_IDS` | JSON object of pre-existing resource ids (see `infra/scripts/lookup-ids.sh`); needed only until `infra/imports.tf` is deleted after the first apply |
 
-The zone id and team name are not secret and sit in the workflow file. After the first apply, copy `access_aud` and `access_team_domain` from the apply job's output into `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` in `wrangler.jsonc`, then delete `infra/imports.tf`, the `import_ids` variable and the `TF_VAR_IMPORT_IDS` secret.
+The zone id and team name are not secret and sit in the workflow file. `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` in `wrangler.jsonc` come from the apply outputs `access_team_domain` and `access_aud`.
 
 Running locally is still possible (`brew install opentofu`, copy the `.example` files in `infra/` and fill them in, `tofu init -backend-config=backend.hcl`), but the pipeline is the normal path.
+
+## Changing who can use the admin page
+
+Both lists are GitHub repository secrets, so no local tooling is needed:
+
+- **Who can sign in** is `TF_VAR_ACCESS_ALLOWED_EMAILS` (a JSON list). After editing it, run the **Infrastructure** workflow from the Actions tab; the plan shows the policy change and the apply waits for approval.
+- **Who can change or delete enquiries** is `ADMIN_EMAILS` (comma-separated). After editing it, run the **Test and deploy** workflow; the deploy step writes it to the Worker.
+
+Someone on the first list but not the second can read and export enquiries but not alter them.
 
 ## Data protection
 

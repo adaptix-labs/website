@@ -47,13 +47,3 @@ variable "resend_dns_records" {
   }))
   default = []
 }
-
-variable "import_ids" {
-  description = "Ids of pre-existing resources, used only by imports.tf. See scripts/lookup-ids.sh."
-  type = object({
-    d1_database           = string
-    turnstile_sitekey     = string
-    email_routing_address = string
-    email_routing_rule    = string
-  })
-}
