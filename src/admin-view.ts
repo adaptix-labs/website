@@ -66,9 +66,9 @@ function card(r: EnquiryRow, who: Identity): string {
   const id = esc(r.id);
   const delivery =
     r.email_status === "sent"
-      ? `<p class="mail ok">Email sent</p>`
+      ? `<p class="mail ok"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Email sent</p>`
       : r.email_status === "failed"
-        ? `<details class="mail bad"><summary>Email not sent <span class="chev" aria-hidden="true"></span></summary><p>${esc(r.email_error ?? "No reason was recorded.")} The enquiry is stored here regardless.</p></details>`
+        ? `<details class="mail bad"><summary>Email not sent<svg class="chev" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><p>${esc(r.email_error ?? "No reason was recorded")}. The enquiry is stored here regardless.</p></details>`
         : `<p class="mail">Email pending</p>`;
   const controls = who.isAdmin
     ? `
@@ -155,7 +155,7 @@ h1{margin:0;font:800 32px/1.1 Sora,Inter,sans-serif;color:var(--navy);letter-spa
 .head{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:flex-start}
 h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-spacing:-.01em;overflow-wrap:anywhere}
 .meta{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--muted)}
-.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;background:#eaf4f7;color:var(--blue)}
+.badge{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;font-size:13px;line-height:1;font-weight:700;background:#eaf4f7;color:var(--blue)}
 .badge.contacted{background:#fff4d6;color:#7a5a00}.badge.closed{background:#e8f0e8;color:#2f6b3a}
 .when{margin:0;font-size:14px;color:var(--muted)}
 .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px 24px;margin:18px 0 0;padding:16px 0 0;border-top:1px solid #eef2f5}
@@ -163,15 +163,19 @@ h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-sp
 .msg{margin:16px 0 0;padding:14px 16px;background:#eaf4f7;border-left:4px solid var(--yellow);border-radius:0 12px 12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .muted{color:var(--muted)}
 .foot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid #eef2f5}
-.mail{margin:0;font-size:14px;font-weight:600;color:var(--muted)}.mail.ok{color:#2f6b3a}.mail.bad summary{color:#b42318;cursor:pointer;font-weight:600;min-height:44px;display:inline-flex;align-items:center}.mail.bad p{margin:4px 0 8px;font-weight:400;color:var(--ink)}
+.mail{margin:0;font-size:13px;font-weight:700}
+.mail.ok,.mail.bad summary,.mail:not(.ok):not(.bad){display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;line-height:1;background:#eef2f5;color:var(--muted)}
+.mail.ok{background:#e8f0e8;color:#2f6b3a}
+.mail.bad summary{background:#fdecec;color:#b42318;cursor:pointer}
+.mail.bad p{margin:10px 0 0;font-size:14px;font-weight:400;color:var(--ink)}
 .status{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0}
 .status label{font-size:14px;font-weight:600;color:var(--muted)}
-select{min-height:44px;padding:0 36px 0 12px;border-radius:10px;border:1.5px solid #9fb2c1;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23102b48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center;appearance:none;-webkit-appearance:none;font:inherit;color:var(--navy)}
+select{height:44px;padding:0 40px 0 18px;border-radius:999px;border:2px solid var(--navy);font-weight:600;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23102b48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;appearance:none;-webkit-appearance:none;font-family:inherit;font-size:15px;color:var(--navy);cursor:pointer}
 summary{list-style:none}summary::-webkit-details-marker{display:none}
 .status .btn,.danger summary{min-width:116px}.danger summary{gap:8px;cursor:pointer}.danger summary svg{flex:none}.danger[open] summary{background:#fdecec}
 .danger form{margin:10px 0 0;padding:14px 16px;background:#fdecec;border-radius:12px}.danger p{margin:0 0 10px}
-.chev{display:inline-block;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:6px}
-.mail.bad[open] .chev{transform:rotate(-135deg) translateY(-2px)}
+.chev{flex:none;transition:transform .15s}
+.mail.bad[open] .chev{transform:rotate(180deg)}
 .empty{padding:40px 24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:20px}
 @media(max-width:600px){.top{padding:12px 16px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{align-items:center;gap:12px 16px}.foot .danger{margin-left:auto}.foot .danger[open]{width:100%;margin-left:0}.foot .status{order:3;width:100%;flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}}
 @media(max-width:360px){.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}}
