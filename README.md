@@ -37,25 +37,22 @@ The page ships with Cloudflare's always-passing Turnstile **test** site key, so 
 
 Everything around the Worker that lives in the Cloudflare account is declared in `infra/` with OpenTofu and the Cloudflare provider: the D1 database, the Turnstile widget, Email Routing (hello@ forwarding and the drop catch-all), Resend's DNS records, and the Access application and policy for `/admin`. The Worker itself, its bindings, custom domains, cron and secrets stay with Wrangler so each tool owns distinct things.
 
-Personal data never enters git: the destination inbox and the list of people allowed into `/admin` are variables set in the git-ignored `infra/terraform.tfvars`. State is kept in a private R2 bucket.
+Changes flow through GitHub Actions (`.github/workflows/infra.yml`): a pull request touching `infra/` gets a `tofu plan` posted as a comment; merging to `main` runs `tofu apply` of that plan in the `infrastructure` environment, which is configured to require a manual approval. State is kept in the private R2 bucket `adaptix-terraform-state`. Personal data never enters git: the destination inbox and the list of people allowed into `/admin` are repository secrets passed as `TF_VAR_*`.
 
-One-time setup:
+Repository secrets the workflow needs:
 
-```bash
-brew install opentofu
-cd infra
-cp terraform.tfvars.example terraform.tfvars    # fill in ids, inbox, admin emails, Resend records
-cp backend.hcl.example backend.hcl              # R2 endpoint and an R2 API token (Object Read & Write)
-export CLOUDFLARE_API_TOKEN=...                  # the Terraform token described below
-scripts/lookup-ids.sh <account_id> <zone_id>     # ids of pre-existing resources, paste into terraform.tfvars
-tofu init -backend-config=backend.hcl
-tofu plan                                        # first run shows imports plus the new Access resources
-tofu apply
-```
+| Secret | Value |
+| --- | --- |
+| `TF_CLOUDFLARE_API_TOKEN` | Custom token: Account → D1, Turnstile, Email Routing Addresses, Access: Apps and Policies (Edit), Account Settings (Read); Zone (adaptix.uk) → Zone Read, Zone Settings Edit, DNS Edit, Email Routing Rules Edit |
+| `CLOUDFLARE_ACCOUNT_ID` | Shared with the deploy workflow |
+| `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | R2 account API token with Object Read & Write on the state bucket |
+| `TF_VAR_ENQUIRY_DESTINATION_EMAIL` | The private inbox hello@ forwards to |
+| `TF_VAR_ACCESS_ALLOWED_EMAILS` | JSON list of emails allowed into `/admin`, e.g. `["a@example.com","b@example.com"]` |
+| `TF_VAR_IMPORT_IDS` | JSON object of pre-existing resource ids (see `infra/scripts/lookup-ids.sh`); needed only until `infra/imports.tf` is deleted after the first apply |
 
-After the first apply, copy `access_aud` and `access_team_domain` from the outputs into `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` in `wrangler.jsonc`, then delete `infra/imports.tf`.
+The zone id and team name are not secret and sit in the workflow file. After the first apply, copy `access_aud` and `access_team_domain` from the apply job's output into `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` in `wrangler.jsonc`, then delete `infra/imports.tf`, the `import_ids` variable and the `TF_VAR_IMPORT_IDS` secret.
 
-The Terraform token needs: Account → D1 Edit, Turnstile Edit, Email Routing Addresses Edit, Access: Apps and Policies Edit, Account Settings Read; Zone (adaptix.uk) → Zone Read, DNS Edit, Email Routing Rules Edit. The R2 state bucket `adaptix-terraform-state` is created once by hand (it cannot sensibly manage itself). Pull requests run `tofu fmt -check` and `tofu validate`; applies are run by a person, because these resources change rarely and a CI credential able to edit Access policies would be a needless risk.
+Running locally is still possible (`brew install opentofu`, copy the `.example` files in `infra/` and fill them in, `tofu init -backend-config=backend.hcl`), but the pipeline is the normal path.
 
 ## Data protection
 
