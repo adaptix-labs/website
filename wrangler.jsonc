@@ -37,5 +37,6 @@
   }
   // Secrets, set with `wrangler secret put <NAME>` (or .dev.vars locally):
   //   ENQUIRY_TO (the private inbox that receives enquiries), TURNSTILE_SECRET, RESEND_API_KEY, IP_HASH_SALT,
-  //   ADMIN_EMAILS (comma-separated emails allowed to change or delete enquiries; everyone else Access admits is read-only)
+  //   ADMIN_EMAILS (comma-separated emails allowed to change or delete enquiries; everyone else Access admits is
+  //   read-only). Written by the deploy workflow from the GitHub secret of the same name.
 }

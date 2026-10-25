@@ -53,6 +53,15 @@ The zone id and team name are not secret and sit in the workflow file. `ACCESS_T
 
 Running locally is still possible (`brew install opentofu`, copy the `.example` files in `infra/` and fill them in, `tofu init -backend-config=backend.hcl`), but the pipeline is the normal path.
 
+## Changing who can use the admin page
+
+Both lists are GitHub repository secrets, so no local tooling is needed:
+
+- **Who can sign in** is `TF_VAR_ACCESS_ALLOWED_EMAILS` (a JSON list). After editing it, run the **Infrastructure** workflow from the Actions tab; the plan shows the policy change and the apply waits for approval.
+- **Who can change or delete enquiries** is `ADMIN_EMAILS` (comma-separated). After editing it, run the **Test and deploy** workflow; the deploy step writes it to the Worker.
+
+Someone on the first list but not the second can read and export enquiries but not alter them.
+
 ## Data protection
 
 Enquiries hold only what the form asks for plus a salted hash of the sender's IP for rate limiting. Rows are deleted after `RETENTION_DAYS`. Deleting a single enquiry on request is a button in `/admin` or one SQL statement with `wrangler d1 execute`.
