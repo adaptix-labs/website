@@ -31,7 +31,7 @@ export function renderAdminPage(m: AdminPageModel): string {
   const body = `
 <a class="skip" href="#enquiries">Skip to enquiries</a>
 <header class="top">
-  <a class="brand" href="/admin"><img src="/assets/adaptix-logo.png" alt="Adaptix" width="134" height="40"></a>
+  <a class="brand" href="/admin"><img src="/assets/adaptix-logo.png" alt="Adaptix" width="154" height="52"></a>
   <div class="account">
     <p class="who"><span class="vh">Signed in as </span><strong>${esc(m.identity.email)}</strong><span class="role">${m.identity.isAdmin ? "administrator" : "viewer"}</span></p>
     <a class="btn small" href="/cdn-cgi/access/logout">Sign out</a>
@@ -66,9 +66,9 @@ function card(r: EnquiryRow, who: Identity): string {
   const id = esc(r.id);
   const delivery =
     r.email_status === "sent"
-      ? `<p class="mail ok">Email sent</p>`
+      ? `<p class="mail ok"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Email sent</p>`
       : r.email_status === "failed"
-        ? `<details class="mail bad"><summary>Email not sent</summary><p>${esc(r.email_error ?? "No reason was recorded.")} The enquiry is stored here regardless.</p></details>`
+        ? `<details class="mail bad"><summary>Email not sent<svg class="chev" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><p>${esc(r.email_error ?? "No reason was recorded")}. The enquiry is stored here regardless.</p></details>`
         : `<p class="mail">Email pending</p>`;
   const controls = who.isAdmin
     ? `
@@ -78,7 +78,7 @@ function card(r: EnquiryRow, who: Identity): string {
         <button type="submit" class="btn">Save</button>
       </form>
       <details class="danger">
-        <summary>Delete</summary>
+        <summary class="btn del"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg><span class="label">Delete</span></summary>
         <form method="post" action="/admin/enquiries/${id}/delete">
           <p>Permanently delete this enquiry from ${esc(r.name)}?</p>
           <button type="submit" class="btn del">Yes, delete it</button>
@@ -91,7 +91,7 @@ function card(r: EnquiryRow, who: Identity): string {
         <div class="head">
           <div>
             <h2 id="enquiry-${id}-name">${esc(r.name)}</h2>
-            <p class="meta"><span class="badge ${r.status}">${label(r.status)}</span> <span class="interest">${esc(r.interest)}</span></p>
+            <div class="meta"><span class="badge ${r.status}">${label(r.status)}</span> <span class="interest">${esc(r.interest)}</span> ${delivery}</div>
           </div>
           <p class="when">Received <time datetime="${esc(r.created_at)}">${esc(formatDate(r.created_at))}</time></p>
         </div>
@@ -102,10 +102,7 @@ function card(r: EnquiryRow, who: Identity): string {
         </dl>
         <h3 class="vh">Message</h3>
         <p class="msg">${r.message ? esc(r.message) : '<span class="muted">No message was written.</span>'}</p>
-        <div class="foot">
-          ${delivery}
-          ${controls}
-        </div>
+        ${controls ? `<div class="foot">${controls}</div>` : ""}
       </article>
     </li>`;
 }
@@ -130,46 +127,57 @@ a{color:var(--blue)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-bottom:1px solid var(--line)}
-.brand img{display:block;height:40px;width:auto}
+.brand{display:inline-block;line-height:0}.brand img{display:block;height:52px;width:auto}
 .account{display:flex;align-items:center;gap:14px;margin-left:auto;min-width:0}
 .who{display:flex;align-items:center;gap:10px;margin:0;min-width:0;font-size:14px;color:var(--ink)}
 .who strong{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .role{flex:none;padding:3px 10px;border-radius:999px;background:#eaf4f7;color:var(--blue);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.btn.small{min-height:40px;padding:0 16px;font-size:14px;flex:none}
+.btn.small{height:40px;min-width:0;padding:0 16px;font-size:14px;flex:none}
 main{max-width:920px;margin:0 auto;padding:28px 20px 64px}
 .title{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;justify-content:space-between}
 .eb{margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
 h1{margin:0;font:800 32px/1.1 Sora,Inter,sans-serif;color:var(--navy);letter-spacing:-.02em}
 .sub{margin:6px 0 0;color:var(--muted)}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:999px;border:2px solid var(--navy);background:#fff;color:var(--navy);font:600 15px Inter,sans-serif;text-decoration:none;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;height:44px;min-width:104px;padding:0 20px;margin:0;border-radius:999px;border:2px solid var(--navy);background:#fff;color:var(--navy);font:600 15px/1 Inter,sans-serif;line-height:1;text-decoration:none;cursor:pointer;vertical-align:middle}
 .btn:hover{background:#eaf4f7}
-.btn.primary{background:var(--yellow);border-color:var(--yellow)}.btn.primary:hover{background:#ffd966}
+.btn.primary{background:var(--yellow);border-color:var(--yellow);min-width:0}.btn.primary:hover{background:#ffd966}
 .btn.del{border-color:#b42318;color:#b42318}.btn.del:hover{background:#fdecec}
-.filters{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
-.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #cfe0ec;background:#fff;color:var(--navy);font-weight:600;text-decoration:none}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;max-width:640px;margin:24px 0}
+.chip{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #cfe0ec;background:#fff;color:var(--navy);font-weight:600;text-decoration:none;white-space:nowrap}
 .chip .n{font-weight:500;color:var(--muted)}
 .chip.on{background:var(--navy);border-color:var(--navy);color:#fff}.chip.on .n{color:#cfe0ec}
-.cards{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+.cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.cards>li,.card,.foot,.status{min-width:0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 24px}
 .head{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:flex-start}
 h2{margin:0;font:700 22px/1.25 Sora,Inter,sans-serif;color:var(--navy);letter-spacing:-.01em;overflow-wrap:anywhere}
 .meta{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--muted)}
-.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;background:#eaf4f7;color:var(--blue)}
+.meta .mail.bad{position:relative}
+.mail.bad p{position:absolute;top:calc(100% + 8px);left:0;z-index:5;width:max-content;max-width:min(320px,calc(100vw - 64px));margin:0;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px -14px rgba(16,43,72,.45)}
+.mail.bad p::before{content:"";position:absolute;top:-6px;left:18px;width:10px;height:10px;background:#fff;border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+.badge{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;font-size:13px;line-height:1;font-weight:700;background:#eaf4f7;color:var(--blue)}
 .badge.contacted{background:#fff4d6;color:#7a5a00}.badge.closed{background:#e8f0e8;color:#2f6b3a}
 .when{margin:0;font-size:14px;color:var(--muted)}
 .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px 24px;margin:18px 0 0;padding:16px 0 0;border-top:1px solid #eef2f5}
 .facts div{margin:0}.facts dt{font-size:13px;font-weight:600;color:var(--muted)}.facts dd{margin:2px 0 0;overflow-wrap:anywhere}
 .msg{margin:16px 0 0;padding:14px 16px;background:#eaf4f7;border-left:4px solid var(--yellow);border-radius:0 12px 12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .muted{color:var(--muted)}
-.foot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid #eef2f5}
-.mail{margin:0;font-size:14px;font-weight:600;color:var(--muted)}.mail.ok{color:#2f6b3a}.mail.bad summary{color:#b42318;cursor:pointer;font-weight:600;min-height:44px;display:inline-flex;align-items:center}.mail.bad p{margin:4px 0 8px;font-weight:400;color:var(--ink)}
+.foot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-start;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid #eef2f5}
+.mail{margin:0;font-size:13px;font-weight:700}
+.mail.ok,.mail.bad summary,.mail:not(.ok):not(.bad){display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;line-height:1;background:#eef2f5;color:var(--muted)}
+.mail.ok{background:#e8f0e8;color:#2f6b3a}
+.mail.bad summary{background:#fdecec;color:#b42318;cursor:pointer}
+.mail.bad p{font-size:14px;font-weight:400;color:var(--ink);line-height:1.45}
 .status{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0}
 .status label{font-size:14px;font-weight:600;color:var(--muted)}
-select{min-height:44px;padding:0 36px 0 12px;border-radius:10px;border:1.5px solid #9fb2c1;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23102b48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center;appearance:none;-webkit-appearance:none;font:inherit;color:var(--navy)}
-.danger summary{cursor:pointer;color:var(--muted);font-size:14px;font-weight:600;min-height:44px;display:inline-flex;align-items:center}
-.danger form{margin:8px 0 0;padding:14px 16px;background:#fdecec;border-radius:12px}.danger p{margin:0 0 10px}
+select{height:44px;padding:0 40px 0 18px;border-radius:999px;border:2px solid var(--navy);font-weight:600;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23102b48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;appearance:none;-webkit-appearance:none;font-family:inherit;font-size:15px;color:var(--navy);cursor:pointer}
+summary{list-style:none}summary::-webkit-details-marker{display:none}
+.status .btn,.danger summary{min-width:116px}.danger summary{gap:8px;cursor:pointer}.danger summary svg{flex:none}.danger[open] summary{background:#fdecec}
+.danger form{margin:10px 0 0;padding:14px 16px;background:#fdecec;border-radius:12px}.danger p{margin:0 0 10px}
+.chev{flex:none;transition:transform .15s}
+.mail.bad[open] .chev{transform:rotate(180deg)}
 .empty{padding:40px 24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:20px}
-@media(max-width:600px){.top{padding:12px 16px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{flex-direction:column;align-items:stretch}.status{justify-content:space-between}.status select{flex:1}}
+@media(max-width:600px){.top{padding:12px 16px}.brand img{height:44px}.account{width:100%;justify-content:space-between;margin:0;padding-top:12px;border-top:1px solid var(--line)}main{padding:20px 16px 48px}.card{padding:18px 16px;border-radius:16px}h1{font-size:28px}.title .btn{width:100%}.foot{flex-wrap:nowrap;gap:8px;align-items:flex-start}.foot .status{flex:1 1 auto;flex-wrap:nowrap}.status select{flex:1 1 0;min-width:0;padding-right:36px}.status .btn{min-width:0;padding:0 16px}.status label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.danger summary{width:44px;min-width:44px;padding:0;gap:0}.danger summary .label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.foot:has(.danger[open]){flex-wrap:wrap}.danger[open]{flex:1 0 100%}.danger[open] summary{width:auto;min-width:0;padding:0 16px;gap:8px}.danger[open] summary .label{position:static;width:auto;height:auto;clip:auto;clip-path:none}}
 </style>
 </head>
 <body>${body}

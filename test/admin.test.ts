@@ -95,6 +95,8 @@ describe("admin listing", () => {
     const html = await (await admin("/admin", { token: await signJwt(keys, { email: "Boss@Adaptix.uk" }) })).text();
     expect(html).toContain('name="status"');
     expect(html).toContain("/admin/enquiries/id-1/delete");
+    // the delete disclosure reads as a button, with an icon hidden from assistive tech
+    expect(html).toMatch(/<summary class="btn del"[^>]*>\s*<svg[^>]*aria-hidden="true"/);
   });
 
   it("is structured for screen readers and small screens", async () => {
