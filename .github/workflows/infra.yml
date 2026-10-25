@@ -27,8 +27,6 @@ env:
   TF_VAR_access_team_name: "keyvault"
   TF_VAR_enquiry_destination_email: ${{ secrets.TF_VAR_ENQUIRY_DESTINATION_EMAIL }}
   TF_VAR_access_allowed_emails: ${{ secrets.TF_VAR_ACCESS_ALLOWED_EMAILS }}
-  # Only needed while infra/imports.tf exists (first apply); delete the secret afterwards.
-  TF_VAR_import_ids: ${{ secrets.TF_VAR_IMPORT_IDS }}
   TF_IN_AUTOMATION: "true"
 
 jobs:
