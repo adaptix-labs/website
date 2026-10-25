@@ -1,0 +1,5 @@
+# Copy to backend.hcl (git-ignored). Values come from an R2 API token with
+# Object Read & Write on the adaptix-terraform-state bucket.
+endpoints  = { s3 = "https://<account-id>.r2.cloudflarestorage.com" }
+access_key = "<r2-access-key-id>"
+secret_key = "<r2-secret-access-key>"
