@@ -22,6 +22,7 @@ a{color:inherit;text-decoration:none}
 .fld{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:#172e44}
 .fld input,.fld select,.fld textarea{font:400 16px Inter,sans-serif;min-height:48px;padding:12px 14px;border:1.5px solid #9fb2c1;border-radius:10px;background:#fff;color:#102b48;box-sizing:border-box;width:100%}
 .fld textarea{min-height:120px;resize:vertical}
+.fld select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23102b48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px 16px}
 details{border-bottom:1px solid #dde5ea;padding:20px 0}
 summary{font-weight:600;font-size:18px;color:#102b48;cursor:pointer}
 details p{margin:12px 0 0;color:#43596a;line-height:1.7}
@@ -77,6 +78,7 @@ html{scroll-behavior:smooth}section[id]{scroll-margin-top:84px}
 .nav .btn{margin-top:10px}
 }
 @media(max-width:400px){#about .lift{flex-direction:column;align-items:flex-start!important;gap:6px!important}}
+@media(max-width:480px){#contact{padding-left:16px!important;padding-right:16px!important}#enquiry{padding:24px 20px!important}}
 
 .skip{position:absolute;top:8px;left:-9999px;z-index:30;background:#102b48;color:#fff;padding:10px 16px;border-radius:8px;font:600 15px Inter,sans-serif}.skip:focus{left:16px}
 main:focus{outline:none}
@@ -171,45 +173,28 @@ main:focus{outline:none}
 <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:64px">
 <div><p class="eb" style="color:#f9c742">Start a conversation</p><h2 class="h" style="font-size:clamp(32px,7vw,48px);color:#fff">Let's make learning move.</h2>
 <p style="font-size:19px;color:#d7e6f3;margin:20px 0 0">Interested in a school workshop, learning resources or a partnership? Tell us a little about what you have in mind. We would be pleased to hear from schools, educators and collaborators.</p></div>
-<form id="enquiry" action="https://docs.google.com/forms/d/e/1FAIpQLSd3tW8njp6FMSxBN26UTwdS04rvJquBcqUC4UPLwXuNSXen4A/formResponse" method="POST" target="_blank" style="background:#fff;border-radius:24px;padding:36px">
+<form id="enquiry" action="/api/enquiry" method="POST" style="background:#fff;border-radius:24px;padding:36px">
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:18px">
-<label class="fld">Your name *<input type="text" name="entry.2005589898" autocomplete="name" required=""></label>
-<label class="fld">Work email *<input type="email" name="entry.520765193" autocomplete="email" required=""></label>
-<label class="fld">Phone<input type="tel" name="entry.738909185" autocomplete="tel"></label>
-<label class="fld">School or organisation<input type="text" name="entry.37241398"></label>
+<label class="fld">Your name *<input type="text" name="name" autocomplete="name" required=""></label>
+<label class="fld">Work email *<input type="email" name="email" autocomplete="email" required=""></label>
+<label class="fld">Phone<input type="tel" name="phone" autocomplete="tel"></label>
+<label class="fld">School or organisation<input type="text" name="organisation"></label>
 </div>
-<label class="fld" style="margin-top:18px">I'm interested in *<select name="entry.1041544731" required><option>School workshop</option><option>Curriculum resources</option><option>Business partnership</option><option>Research collaboration</option><option value="__other_option__">Other</option></select></label>
-<label class="fld" style="margin-top:18px">Tell us about your enquiry<textarea name="entry.1852642943"></textarea></label>
-<input type="hidden" name="entry.1041544731.other_option_response" value="Other"><button class="btn" type="submit" style="margin-top:22px;width:100%">Send enquiry</button>
+<label class="fld" style="margin-top:18px">I'm interested in *<select name="interest" required><option>School workshop</option><option>Curriculum resources</option><option>Business partnership</option><option>Research collaboration</option><option>Other</option></select></label>
+<label class="fld" style="margin-top:18px">Tell us about your enquiry<textarea name="message"></textarea></label>
+<div id="turnstile" data-sitekey="0x4AAAAAAFlH8ecwXeDRbixw" style="margin-top:22px;min-height:65px"></div>
+<button class="btn" type="submit" style="margin-top:14px;width:100%">Send enquiry</button>
 <p style="margin:14px 0 0;font-size:13px;color:#43596a">Your details are used only to reply to your enquiry.</p>
-<p id="ok" class="msg" hidden role="status" style="background:#eaf4f7;border-left:5px solid #f9c742;color:#102b48"><b>Thank you!</b> We have received your enquiry and will reply soon.</p><p id="err" class="msg" hidden role="alert" style="background:#fdecec;border-left:5px solid #e23b3b;color:#5a1414">Your enquiry did not send. Check your connection and try again, or email us directly.</p><input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"></form></div></section>
+<p id="ok" class="msg" hidden role="status" style="background:#eaf4f7;border-left:5px solid #f9c742;color:#102b48"><b>Thank you!</b> We have received your enquiry and will reply soon.</p><p id="err" class="msg" hidden role="alert" style="background:#fdecec;border-left:5px solid #e23b3b;color:#5a1414">Your enquiry did not send. Please check your connection and try again, or email <a href="mailto:hello@adaptix.uk" style="color:inherit;font-weight:600;text-decoration:underline">hello@adaptix.uk</a>.</p><input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"></form></div></section>
 </main>
 
 <footer style="background:#0a2035;color:#d7e6f3;padding:44px 32px;font-size:14px">
 <div style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap">
-<div><strong style="font-family:Sora,sans-serif;font-size:20px;color:#fff">Adaptix</strong><br>Learning in motion.</div>
+<div><strong style="font-family:Sora,sans-serif;font-size:20px;color:#fff">Adaptix</strong><br>Learning in motion.<br><a href="mailto:hello@adaptix.uk" style="color:#f9c742;font-weight:600">hello@adaptix.uk</a></div>
 <div style="max-width:560px;line-height:1.7">Adaptix Educational Solutions Ltd · Company number 15102106 · Registered in England and Wales<br>Registered office: Ingenuity Centre, Triumph Road, Nottingham, NG7 2TU<br>© 2026 Adaptix Educational Solutions Ltd.</div>
 </div></footer>
 </div>
-<script>
-(function(){var f=document.getElementById('enquiry');if(!f)return;var ok=document.getElementById('ok'),err=document.getElementById('err'),btn=f.querySelector('button[type=submit]');
-f.addEventListener('submit',function(e){e.preventDefault();if(f.elements.website&&f.elements.website.value)return;ok.hidden=true;err.hidden=true;btn.disabled=true;var label=btn.textContent;btn.textContent='Sending\u2026';
-var d=new FormData(f);d.delete('website');
-fetch(f.action,{method:'POST',mode:'no-cors',body:new URLSearchParams(d)}).then(function(){f.reset();ok.hidden=false;ok.scrollIntoView({block:'nearest',behavior:'smooth'})}).catch(function(){err.hidden=false}).then(function(){btn.disabled=false;btn.textContent=label})});})();
-
-(function(){var b=document.querySelector('.menu'),n=document.getElementById('nav');if(!b||!n)return;
-function set(o){n.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'true':'false')}
-b.addEventListener('click',function(){set(!n.classList.contains('open'))});
-n.addEventListener('click',function(e){if(e.target.closest('a'))set(false)});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('open')){set(false);b.focus()}});})();
-
-(function(){var r=document.querySelector('.rot');if(!r)return;var s=r.firstElementChild,ws=[].slice.call(s.children),i=0;
-function w(el){var g=document.createRange();g.selectNodeContents(el);return g.getBoundingClientRect().width}
-function fit(){r.style.width=Math.ceil(w(ws[i]))+'px'}
-if(matchMedia('(prefers-reduced-motion: reduce)').matches){r.classList.add('js');fit();if(document.fonts)document.fonts.ready.then(fit);return}
-r.classList.add('js');fit();if(document.fonts)document.fonts.ready.then(fit);window.addEventListener('resize',fit);
-setInterval(function(){i++;s.style.transform='translateY(-'+(i*1.65)+'em)';fit();
-if(i===ws.length-1){setTimeout(function(){s.style.transition='none';s.style.transform='none';i=0;void s.offsetHeight;s.style.transition=''},520)}},2500);})();
-</script>
+<script src="site.js" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=adaptixTurnstile" async defer></script>
 </body>
 </html>

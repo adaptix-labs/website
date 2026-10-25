@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "adaptix-website",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "none"
+  },
+  "routes": [
+    { "pattern": "adaptix.uk", "custom_domain": true },
+    { "pattern": "www.adaptix.uk", "custom_domain": true }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "adaptix-enquiries",
+      "database_id": "9e77f81a-63b0-47a8-a8b9-48a1032e4526",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    // Nightly data-retention job (03:00 UTC)
+    "crons": ["0 3 * * *"]
+  },
+  "vars": {
+    "ENQUIRY_FROM": "Adaptix website <no-reply@adaptix.uk>",
+    "RETENTION_DAYS": "365",
+    // Cloudflare Access application protecting /admin. Leave empty until it exists: /admin then fails closed.
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    // Comma-separated emails allowed to change or delete enquiries; everyone else Access admits is read-only.
+    "ADMIN_EMAILS": ""
+  }
+  // Secrets, set with `wrangler secret put <NAME>` (or .dev.vars locally):
+  //   ENQUIRY_TO (the private inbox that receives enquiries), TURNSTILE_SECRET, RESEND_API_KEY, IP_HASH_SALT
+}

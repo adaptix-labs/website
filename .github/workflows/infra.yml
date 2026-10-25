@@ -1,0 +1,131 @@
+name: Infrastructure
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ["infra/**", ".github/workflows/infra.yml"]
+  push:
+    branches: [main]
+    paths: ["infra/**", ".github/workflows/infra.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: infrastructure
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  TOFU_VERSION: "1.13.2"
+  # Cloudflare provider credential (the terraform-adaptix token)
+  CLOUDFLARE_API_TOKEN: ${{ secrets.TF_CLOUDFLARE_API_TOKEN }}
+  # Variables. Ids are not secret; the inbox and admin list are.
+  TF_VAR_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+  TF_VAR_zone_id: "31eec8ae3fb94be260d273824559bfe2"
+  TF_VAR_access_team_name: "keyvault"
+  TF_VAR_enquiry_destination_email: ${{ secrets.TF_VAR_ENQUIRY_DESTINATION_EMAIL }}
+  TF_VAR_access_allowed_emails: ${{ secrets.TF_VAR_ACCESS_ALLOWED_EMAILS }}
+  # Only needed while infra/imports.tf exists (first apply); delete the secret afterwards.
+  TF_VAR_import_ids: ${{ secrets.TF_VAR_IMPORT_IDS }}
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.plan.outputs.exitcode == '2' }}
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+          tofu_wrapper: false
+
+      - name: Configure state backend
+        run: |
+          cat > backend.hcl <<CFG
+          endpoints  = { s3 = "https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com" }
+          access_key = "${{ secrets.R2_ACCESS_KEY_ID }}"
+          secret_key = "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+          CFG
+
+      - run: tofu init -input=false -backend-config=backend.hcl
+      - run: tofu fmt -check -recursive
+      - run: tofu validate
+
+      - name: Plan
+        id: plan
+        run: |
+          set +e
+          tofu plan -input=false -no-color -detailed-exitcode -out=tfplan > plan.txt 2>&1
+          code=$?
+          set -e
+          echo "exitcode=$code" >> "$GITHUB_OUTPUT"
+          cat plan.txt
+          # 0 = no changes, 2 = changes, anything else = error
+          [ "$code" = "0" ] || [ "$code" = "2" ]
+
+      - name: Comment plan on the pull request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('infra/plan.txt', 'utf8');
+            const status = '${{ steps.plan.outputs.exitcode }}' === '0' ? 'No changes' : 'Changes pending';
+            const marker = '<!-- infra-plan -->';
+            const body = `${marker}\n### Infrastructure plan: ${status}\n\n<details><summary>Show plan</summary>\n\n\`\`\`\n${plan.slice(-60000)}\n\`\`\`\n\n</details>\n\nMerging to \`main\` applies this after approval in the \`infrastructure\` environment.`;
+            const { data: comments } = await github.rest.issues.listComments({ ...context.repo, issue_number: context.issue.number });
+            const existing = comments.find(c => c.body && c.body.startsWith(marker));
+            if (existing) await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            else await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+
+      - name: Keep the plan for apply
+        if: github.event_name != 'pull_request' && steps.plan.outputs.exitcode == '2'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: infra/tfplan
+          retention-days: 1
+          if-no-files-found: error
+
+  apply:
+    needs: plan
+    if: github.event_name != 'pull_request' && needs.plan.outputs.changes == 'true'
+    runs-on: ubuntu-latest
+    environment: infrastructure
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+          tofu_wrapper: false
+
+      - name: Configure state backend
+        run: |
+          cat > backend.hcl <<CFG
+          endpoints  = { s3 = "https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com" }
+          access_key = "${{ secrets.R2_ACCESS_KEY_ID }}"
+          secret_key = "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+          CFG
+
+      - run: tofu init -input=false -backend-config=backend.hcl
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: infra
+
+      - name: Apply the reviewed plan
+        run: tofu apply -input=false -no-color tfplan
+
+      - name: Outputs
+        run: tofu output -no-color
