@@ -14,6 +14,7 @@ export default defineConfig(async () => {
         miniflare: {
           bindings: {
             TEST_MIGRATIONS: migrations,
+            ENQUIRY_TO: "inbox@example.test",
             TURNSTILE_SECRET: "test-turnstile-secret",
             RESEND_API_KEY: "test-resend-key",
             IP_HASH_SALT: "test-salt",

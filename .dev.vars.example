@@ -1,5 +1,6 @@
 # Copy to .dev.vars for local development (wrangler dev). Never commit .dev.vars.
 # Turnstile "always passes" test secret, pairs with the test site key in public/index.html.
 TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+ENQUIRY_TO=you@example.com
 RESEND_API_KEY=re_test_key
 IP_HASH_SALT=change-me

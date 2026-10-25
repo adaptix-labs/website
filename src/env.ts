@@ -1,6 +1,7 @@
 export interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
+  /** Secret: the private inbox that receives enquiries. Never a committed var. */
   ENQUIRY_TO: string;
   ENQUIRY_FROM: string;
   TURNSTILE_SECRET: string;

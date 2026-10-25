@@ -30,7 +30,6 @@
     "crons": ["0 3 * * *"]
   },
   "vars": {
-    "ENQUIRY_TO": "enquiries@adaptix.uk",
     "ENQUIRY_FROM": "Adaptix website <no-reply@adaptix.uk>",
     "RETENTION_DAYS": "365",
     // Cloudflare Access application protecting /admin. Leave empty until it exists: /admin then fails closed.
@@ -40,5 +39,5 @@
     "ADMIN_EMAILS": ""
   }
   // Secrets, set with `wrangler secret put <NAME>` (or .dev.vars locally):
-  //   TURNSTILE_SECRET, RESEND_API_KEY, IP_HASH_SALT
+  //   ENQUIRY_TO (the private inbox that receives enquiries), TURNSTILE_SECRET, RESEND_API_KEY, IP_HASH_SALT
 }
