@@ -97,6 +97,33 @@ describe("admin listing", () => {
     expect(html).toContain("/admin/enquiries/id-1/delete");
   });
 
+  it("is structured for screen readers and small screens", async () => {
+    const html = await (await admin("/admin", { token: await signJwt(keys, { email: "boss@adaptix.uk" }) })).text();
+    expect(html).toContain('<html lang="en-GB"');
+    expect(html).toContain('<meta name="viewport"');
+    expect(html).toContain('href="#enquiries"'); // skip link
+    expect(html).toMatch(/<header[\s>]/);
+    expect(html).toMatch(/<main[\s>]/);
+    expect(html).toMatch(/<nav[^>]*aria-label="Filter by status"/);
+    expect(html).toContain('aria-current="page"');
+    expect(html).toContain('<img src="/assets/adaptix-logo.png"');
+    expect(html).toContain('alt="Adaptix"');
+    expect(html).toMatch(/<article[^>]*aria-labelledby="enquiry-id-1-name"/);
+    expect(html).toMatch(/<h2[^>]*id="enquiry-id-1-name"[^>]*>Jane Teacher<\/h2>/);
+    expect(html).toMatch(/<time datetime="2026-10-01T09:00:00.000Z"/);
+    expect(html).toMatch(/<label[^>]*for="status-id-1"/);
+    expect(html).toMatch(/<select[^>]*id="status-id-1"/);
+    expect(html).toMatch(/@media[^{]*max-width/);
+    expect(html).not.toMatch(/title="[^"]*Resend/); // failures are shown as text, not tooltips
+    expect(html).toContain("Email not sent");
+  });
+
+  it("explains a failed notification inline", async () => {
+    const html = await (await admin("/admin", { token: await signJwt(keys, {}) })).text();
+    expect(html).toContain("Email not sent");
+    expect(html).toContain("Email sent");
+  });
+
   it("filters by status", async () => {
     const html = await (await admin("/admin?status=contacted", { token: await signJwt(keys, {}) })).text();
     expect(html).toContain("Sam &lt;Partner&gt;");
