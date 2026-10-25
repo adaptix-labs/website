@@ -115,6 +115,32 @@ resource "cloudflare_dns_record" "resend" {
   comment = "Resend sending domain"
 }
 
+# --- Edge rate limit on the enquiry endpoint -------------------------------------------------
+# Stops floods before they reach the Worker. The Worker keeps its own 5-per-hour limit per address;
+# this one is a short burst limit. Free-plan rules must use a 10 s period and timeout and count
+# per data centre (cf.colo.id).
+
+resource "cloudflare_ruleset" "rate_limits" {
+  zone_id     = var.zone_id
+  name        = "Rate limits"
+  description = "Burst protection for the contact form endpoint"
+  kind        = "zone"
+  phase       = "http_ratelimit"
+
+  rules = [{
+    description = "Contact form: at most 5 posts per 10 seconds per address"
+    expression  = "(http.request.uri.path eq \"/api/enquiry\" and http.request.method eq \"POST\")"
+    action      = "block"
+    enabled     = true
+    ratelimit = {
+      characteristics     = ["ip.src", "cf.colo.id"]
+      period              = 10
+      requests_per_period = 5
+      mitigation_timeout  = 10
+    }
+  }]
+}
+
 # --- Admin page: Cloudflare Access ----------------------------------------------------------
 
 # Staff sign in with a one-time code sent to their email; no Cloudflare account is needed.
