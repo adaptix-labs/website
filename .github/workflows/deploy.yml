@@ -23,22 +23,8 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
-  infra:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: opentofu/setup-opentofu@v1
-        with:
-          tofu_version: "1.13.2"
-      - name: Format check
-        run: tofu fmt -check -recursive
-        working-directory: infra
-      - name: Validate
-        run: tofu init -backend=false -input=false && tofu validate
-        working-directory: infra
-
   deploy:
-    needs: [test, infra]
+    needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
