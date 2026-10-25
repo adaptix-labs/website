@@ -29,7 +29,7 @@
     "crons": ["0 3 * * *"]
   },
   "vars": {
-    "ENQUIRY_FROM": "Adaptix website <no-reply@adaptix.uk>",
+    "ENQUIRY_FROM": "Adaptix Enquiries <no-reply@adaptix.uk>",
     "RETENTION_DAYS": "365",
     // Cloudflare Access application protecting /admin (managed in infra/; values from its outputs).
     "ACCESS_TEAM_DOMAIN": "keyvault.cloudflareaccess.com",

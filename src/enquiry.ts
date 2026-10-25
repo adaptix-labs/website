@@ -1,3 +1,4 @@
+import { renderEnquiryEmail } from "./email";
 import type { Env } from "./env";
 import { validateEnquiry, type EnquiryInput } from "./validate";
 
@@ -40,7 +41,7 @@ export async function handleEnquiry(request: Request, env: Env, outbound: Outbou
   const id = crypto.randomUUID();
   await storeEnquiry(env.DB, id, validation.value, ipHash);
 
-  const email = await sendEmail(validation.value, env, outbound);
+  const email = await sendEmail(validation.value, `${new URL(request.url).origin}/admin`, env, outbound);
   await env.DB.prepare("UPDATE enquiries SET email_status = ?, email_error = ? WHERE id = ?")
     .bind(email.ok ? "sent" : "failed", email.ok ? null : email.error, id)
     .run();
@@ -107,27 +108,18 @@ async function storeEnquiry(db: D1Database, id: string, e: EnquiryInput, ipHash:
     .run();
 }
 
-async function sendEmail(e: EnquiryInput, env: Env, outbound: Outbound): Promise<{ ok: true } | { ok: false; error: string }> {
-  const text = [
-    `Name: ${e.name}`,
-    `Email: ${e.email}`,
-    `Phone: ${e.phone ?? "-"}`,
-    `School or organisation: ${e.organisation ?? "-"}`,
-    `Interested in: ${e.interest}`,
-    "",
-    e.message ?? "(no message)",
-  ].join("\n");
+async function sendEmail(
+  e: EnquiryInput,
+  adminUrl: string,
+  env: Env,
+  outbound: Outbound,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const { subject, text, html } = renderEnquiryEmail(e, adminUrl);
   try {
     const res = await outbound(RESEND_EMAILS, {
       method: "POST",
       headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
-      body: JSON.stringify({
-        from: env.ENQUIRY_FROM,
-        to: [env.ENQUIRY_TO],
-        reply_to: e.email,
-        subject: `New enquiry: ${e.interest} from ${e.name}`,
-        text,
-      }),
+      body: JSON.stringify({ from: env.ENQUIRY_FROM, to: [env.ENQUIRY_TO], reply_to: e.email, subject, text, html }),
     });
     if (!res.ok) return { ok: false, error: `Resend responded ${res.status}` };
     return { ok: true };
