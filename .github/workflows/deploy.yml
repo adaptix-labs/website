@@ -46,12 +46,18 @@ jobs:
           command: d1 migrations apply adaptix-enquiries --remote
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v4
-        env:
-          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-          # Worker secrets managed from GitHub: uploaded on every deploy from the env above.
-          secrets: |
-            ADMIN_EMAILS
+
+      # Worker secrets managed from GitHub. Runs after the deploy so a secret can replace a
+      # binding of the same name that an earlier config declared as a plain variable.
+      - name: Sync Worker secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+        run: |
+          test -n "$ADMIN_EMAILS" || { echo "ADMIN_EMAILS secret is empty"; exit 1; }
+          jq -n --arg v "$ADMIN_EMAILS" '{ADMIN_EMAILS: $v}' | npx wrangler secret bulk
